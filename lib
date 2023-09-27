@@ -51,6 +51,7 @@ function library:Init(info)
 		folder,
 		config
 	}
+        local lol = {};
 	
 	protestix_args.folder = isfolder(protestix_args.folderName) or makefolder(protestix_args.folderName)
 	protestix_args.config = isfile(protestix_args.folderName.."\\config.lua") or writefile(protestix_args.folderName.."\\config.lua", httpservice:JSONEncode(Settings))
@@ -72,8 +73,8 @@ function library:Init(info)
 		end
 	end]]
 	
-	info.watermark = false;
-	info.acIndicator = false;
+	lol.watermark = false;
+	lol.acIndicator = false;
 	
 	local Protestix = Instance.new("ScreenGui")
 	local Tabs = Instance.new("Frame")
