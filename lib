@@ -72,8 +72,8 @@ function library:Init(info)
 		end
 	end]]
 	
-	info.watermark = info.watermark or false;
-	info.acIndicator = info.acIndicator or false;
+	info.watermark = false;
+	info.acIndicator = false;
 	
 	local Protestix = Instance.new("ScreenGui")
 	local Tabs = Instance.new("Frame")
