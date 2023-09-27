@@ -35,7 +35,7 @@ local lettersSize = {
 	z = 11
 }
 
-function library:Init(info)
+function library:Init()
 	if game:GetService("CoreGui"):FindFirstChild("Protestix") then game:GetService("CoreGui"):FindFirstChild("Protestix"):Destroy() end
 
 	for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "Protestix" then v:Destroy() end end
@@ -51,11 +51,12 @@ function library:Init(info)
 		folder,
 		config
 	}
-        local lol = {};
 	
+	local lol = {};
+
 	protestix_args.folder = isfolder(protestix_args.folderName) or makefolder(protestix_args.folderName)
 	protestix_args.config = isfile(protestix_args.folderName.."\\config.lua") or writefile(protestix_args.folderName.."\\config.lua", httpservice:JSONEncode(Settings))
-	
+
 	local readedCFG = httpservice:JSONDecode(readfile(protestix_args.folderName.."\\config.lua"))
 	Settings = readedCFG
 
@@ -72,23 +73,23 @@ function library:Init(info)
 			print(moduleFunction, functionSetting)
 		end
 	end]]
-	
+
 	lol.watermark = false;
 	lol.acIndicator = false;
-	
+
 	local Protestix = Instance.new("ScreenGui")
 	local Tabs = Instance.new("Frame")
 	local UIListLayout_3 = Instance.new("UIListLayout")
 	local Background = Instance.new("Frame")
 	local Modal = Instance.new("TextButton")
-	
+
 	Protestix.Name = "Protestix"
-	
+
 	--Protestix.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 	Protestix.Parent = (game:GetService("CoreGui") or gethui());
-	
+
 	Protestix.ResetOnSpawn = false
-	
+
 	Tabs.Name = "Tabs"
 	Tabs.Parent = Protestix
 	Tabs.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -119,17 +120,17 @@ function library:Init(info)
 	Modal.Text = ""
 	Modal.TextColor3 = Color3.fromRGB(0, 0, 0)
 	Modal.TextSize = 14.000
-	
+
 	UIListLayout_3.Parent = Tabs
 	UIListLayout_3.FillDirection = Enum.FillDirection.Horizontal
 	UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
 	UIListLayout_3.Padding = UDim.new(0, 15)
-	
+
 	-- Notification
-	
+
 	local Notifications = Instance.new("Frame")
 	local UIListLayout = Instance.new("UIListLayout")
-	
+
 	Notifications.Name = "Notifications"
 	Notifications.Parent = Protestix
 	Notifications.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -138,13 +139,13 @@ function library:Init(info)
 	Notifications.BorderSizePixel = 0
 	Notifications.Position = UDim2.new(0.755303025, 0, 0.68095237, 0)
 	Notifications.Size = UDim2.new(0, 314, 0, 190)
-	
+
 	UIListLayout.Parent = Notifications
 	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
 	UIListLayout.Padding = UDim.new(0, 10)
-	
+
 	-- Watermark
 
 	local Watermark = Instance.new("Frame")
@@ -163,7 +164,7 @@ function library:Init(info)
 	Watermark.BorderSizePixel = 0
 	Watermark.Position = UDim2.new(0.0116383489, 0, 0.0122699738, 0)
 	Watermark.Size = UDim2.new(0.109756097, 0, 0.0398772992, 0)
-	Watermark.Visible = info.watermark
+	Watermark.Visible = lol.watermark
 
 	UICorner.CornerRadius = UDim.new(0, 5)
 	UICorner.Parent = Watermark
@@ -207,25 +208,25 @@ function library:Init(info)
 	glow.ZIndex = 0
 	glow.Image = "rbxassetid://13494443093"
 	glow.ImageColor3 = Color3.fromRGB(30, 49, 255)
-	
+
 	uarc.Parent = Watermark
 	uarc.AspectType = Enum.AspectType.FitWithinMaxSize
 	uarc.DominantAxis = Enum.DominantAxis.Width
 	uarc.AspectRatio = 5.5
-	
+
 	-- 
-	
+
 	uis.InputBegan:Connect(function(input, gameProcessed)
 		if (input.KeyCode == Enum.KeyCode.Insert) or (input.KeyCode == Enum.KeyCode.RightShift) then
 			Tabs.Visible = not Tabs.Visible;
 			Modal.Visible = not Modal.Visible;
 		end
 	end)
-	
+
 	local mainUtil = {};
-	
+
 	-- TargetHud
-	
+
 	local TargetHud = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
 	local PlayerAvatar = Instance.new("ImageLabel")
@@ -321,38 +322,38 @@ function library:Init(info)
 
 	UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
 	UIGradient_2.Parent = UIStroke
-	
+
 	uarc.Parent = TargetHud
 	uarc.AspectType = Enum.AspectType.FitWithinMaxSize
 	uarc.DominantAxis = Enum.DominantAxis.Width
 	uarc.AspectRatio = 2.95
-	
+
 	function mainUtil:TargetHud(info)
 		info.Player = info.Player or false;
 		info.Health = info.Health or 100;
 		info.MaxHealth = info.MaxHealth or 100;
-		
+
 		if info.Player ~= false then
 			ts:Create(TargetHud, TweenInfo.new(0.3), {Size = UDim2.new(0, 230, 0, 78)}):Play();
-			
+
 			PlayerAvatar.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
 
 			PlayerName.Text = info.Player.Name;
 			hpText.Text = tostring(info.Health);
-			
+
 			ts:Create(HealthBar, TweenInfo.new(0.1), {Size = UDim2.new(info.Health / info.MaxHealth * 0.622, 0, 0.154, 0)}):Play();
 		elseif info.Player == false then
 			ts:Create(TargetHud, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0)}):Play();
 		end
 	end
-	
+
 	-- Notification
-	
+
 	function mainUtil:Notification(info)
 		info.Name = info.Name or "notification";
 		info.Description = info.Description or false;
 		info.Seconds = info.Seconds or 1;
-		
+
 		local Notification = Instance.new("Frame")
 		local mainName = Instance.new("TextLabel")
 		local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
@@ -363,7 +364,7 @@ function library:Init(info)
 		local UICorner = Instance.new("UICorner")
 		local UIStroke = Instance.new("UIStroke")
 		local UIGradient_3 = Instance.new("UIGradient")
-		
+
 		Notification.Name = "Notification"
 		Notification.Parent = Notifications
 		Notification.BackgroundColor3 = Color3.fromRGB(10, 11, 18)
@@ -373,7 +374,7 @@ function library:Init(info)
 		Notification.Position = UDim2.new(0.368785799, 0, 0.776234984, 0)
 		Notification.Size = UDim2.new(0, 0, 0, 0) -- UDim2.new(0, 197, 0, 44)
 		Notification.BackgroundTransparency = 1
-		
+
 		ts:Create(Notification, TweenInfo.new(0.3), {Size = UDim2.new(0, 197, 0, 44)}):Play()
 
 		mainName.Name = "mainName"
@@ -436,7 +437,7 @@ function library:Init(info)
 
 		UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
 		UIGradient_3.Parent = UIStroke
-		
+
 		ts:Create(Notification, TweenInfo.new(0.7), {BackgroundTransparency = 0}):Play()
 		ts:Create(UIStroke, TweenInfo.new(0.7), {Transparency = 0}):Play()
 		ts:Create(status, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
@@ -451,25 +452,25 @@ function library:Init(info)
 			status.Text = info.Status;
 			status.TextColor3 = Color3.fromRGB(167, 167, 167);
 		end
-		
+
 		task.spawn(function()
 			task.wait(info.Seconds);
 
 			ts:Create(Notification, TweenInfo.new(0.3), {
 				Size = UDim2.new(0, 0, 0, 0)
 			}):Play();
-			
+
 			ts:Create(Notification, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
 			ts:Create(UIStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
 			ts:Create(status, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
 			ts:Create(mainName, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
-			
+
 			game:GetService("Debris"):AddItem(Notification, 0.3);
 		end)
 	end
-	
+
 	-- AntiCheat check
-	
+
 	local antiCheatSettings = {
 		ammout = 100,
 		moving = false,
@@ -497,7 +498,7 @@ function library:Init(info)
 	AntiCheatInfo.BorderSizePixel = 0
 	AntiCheatInfo.Position = UDim2.new(0.434, 0, 0.94, 0)
 	AntiCheatInfo.Size = UDim2.new(0.132, 0, 0.031, 0)
-	AntiCheatInfo.Visible = info.acIndicator;
+	AntiCheatInfo.Visible = lol.acIndicator;
 
 	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
 	UIGradient.Parent = AntiCheatInfo
@@ -560,7 +561,7 @@ function library:Init(info)
 	glow.ZIndex = 0
 	glow.Image = "rbxassetid://13494443093"
 	glow.ImageColor3 = Color3.fromRGB(30, 49, 255)
-	
+
 	spawn(function()
 		while task.wait() do
 			if antiCheatSettings.ammout < 100 and not antiCheatSettings.moving then
@@ -592,12 +593,12 @@ function library:Init(info)
 			end
 		end
 	end)
-	
+
 	function mainUtil:AnticheatState(info, callback)
 		info.moving = info.moving or false;
 		info.high = info.high or 1;
 		callback = callback or function() end;
-		
+
 		antiCheatSettings.moving = info.moving;
 		antiCheatSettings.high = info.high;
 		callback(antiCheatSettings.blocked)
@@ -615,7 +616,7 @@ function library:Init(info)
 	Arraylist.BorderSizePixel = 0
 	Arraylist.Position = UDim2.new(0.876722813, 0, 0.0214723926, 0)
 	Arraylist.Size = UDim2.new(0, 151, 0, 632)
-	
+
 	UIListLayout.Parent = Arraylist
 	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -626,10 +627,10 @@ function library:Init(info)
 				local text = obj:FindFirstChildOfClass("TextLabel")
 				local textLength = string.len(text.Text)
 				print(text.Text)
-				
+
 				obj.Size = UDim2.new(0, 0, 0, 21)
 				text.Size = UDim2.new(0, 0, 0, 21)
-	
+
 				task.spawn(function()
 					for t = 1, textLength do
 						local letter = string.sub(text.Text, t, t)
@@ -643,7 +644,7 @@ function library:Init(info)
 				text.Size = obj.Size
 				text.Position = UDim2.new(0, 0, 0, 0)
 				v.LayoutOrder = textLength
-	
+
 				if obj:FindFirstChildOfClass("ImageLabel") then
 					local il = obj:FindFirstChildOfClass("ImageLabel")
 					il.Size = UDim2.new(0, obj.Size.X.Offset + 15, 0, 36)
@@ -652,13 +653,13 @@ function library:Init(info)
 			end
 		end
 	end
-	
+
 	function mainUtil:CreateTab(info)
 		local ButtonLayout = 0;
-		
+
 		info.Name = info.Name or "tab";
 		local listAddY = 0;
-		
+
 		local Tab = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
 		local Frame = Instance.new("Frame")
@@ -667,7 +668,7 @@ function library:Init(info)
 		local TabName = Instance.new("TextLabel")
 		local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
 		local uiPadding = Instance.new("UIPadding")
-		
+
 		Tab.Name = "Tab"
 		Tab.Parent = Tabs
 		Tab.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -695,7 +696,7 @@ function library:Init(info)
 		List.BorderSizePixel = 0
 		List.Position = UDim2.new(0, 0, 0.833332896, 0)
 		List.Size = UDim2.new(0, 217, 0, 6)
-		
+
 		UIListLayout.Parent = List
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
@@ -713,23 +714,23 @@ function library:Init(info)
 		TabName.TextScaled = true
 		TabName.TextSize = 14.000
 		TabName.TextWrapped = true
-		
+
 		uiPadding.Parent = List
 		uiPadding.PaddingTop = UDim.new(0, 6)
-		
+
 		UITextSizeConstraint.Parent = TabName
 		UITextSizeConstraint.MaxTextSize = 18
-		
+
 		local custom = {};
-		
+
 		function custom:CreateButton(infoButton, callback)
 			ButtonLayout += 1;
-			
+
 			listAddY += 27;	
 			ts:Create(List, TweenInfo.new(1), {
 				Size = UDim2.new(0, 217, 0, listAddY)
 			}):Play();
-			
+
 			infoButton.Name = infoButton.Name or "button";
 			infoButton.Dropdown = infoButton.Dropdown or {};
 			infoButton.Open = infoButton.Open or false;
@@ -741,26 +742,26 @@ function library:Init(info)
 					enabled = false
 				}
 			end
-			
+
 			local buttonSettings = {
 				enabled = Settings[infoButton.Flag] and Settings[infoButton.Flag].enabled or false
 			}
-			
+
 			callback(buttonSettings.enabled);
 			infoButton.Enabled = buttonSettings.enabled;
-			
+
 			local waitingToPress = false;
 			local key = nil;
-			
+
 			local dropdownYsize = 0;
-			
+
 			local Button = Instance.new("TextButton")
 			local ButtonName = Instance.new("TextLabel")
 			local Dropdown = Instance.new("Frame")
 
 			local UIListLayout = Instance.new("UIListLayout")
 			local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-			
+
 			Button.Name = "Button"
 			Button.Parent = List
 			Button.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
@@ -791,7 +792,7 @@ function library:Init(info)
 			ButtonName.TextSize = 24.000
 			ButtonName.TextWrapped = true
 			ButtonName.TextXAlignment = Enum.TextXAlignment.Left
-			
+
 			Dropdown.Name = "Dropdown"
 			Dropdown.Parent = List
 			Dropdown.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
@@ -804,10 +805,10 @@ function library:Init(info)
 
 			UIListLayout.Parent = Dropdown
 			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-			
+
 			UITextSizeConstraint.Parent = ButtonName
 			UITextSizeConstraint.MaxTextSize = 17
-			
+
 			local keybind = Instance.new("TextButton")
 			local keybindName = Instance.new("TextLabel")
 			local UITextSizeConstraint2 = Instance.new("UITextSizeConstraint")
@@ -843,13 +844,13 @@ function library:Init(info)
 
 			UITextSizeConstraint2.Parent = keybindName
 			UITextSizeConstraint2.MaxTextSize = 17
-			
+
 			keybind.MouseButton1Click:Connect(function()
 				if not waitingToPress then
 					waitingToPress = true
 				end
 			end)
-			
+
 			uis.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.Keyboard then
 					if key ~= nil then
@@ -876,7 +877,7 @@ function library:Init(info)
 							end
 						end
 					end
-					
+
 					if input.KeyCode == Enum.KeyCode.Backspace then
 						if waitingToPress then
 							waitingToPress = false
@@ -885,7 +886,7 @@ function library:Init(info)
 							keybindName.TextColor3 = Color3.fromRGB(45, 47, 56)
 						end
 					end
-					
+
 					if input.KeyCode == Enum.KeyCode.Return then
 						if waitingToPress then
 							waitingToPress = false;
@@ -915,7 +916,7 @@ function library:Init(info)
 			ArrayFunction.Position = UDim2.new(0.337748349, 0, -0.00126582163, 0)
 			ArrayFunction.Size = UDim2.new(0, 100, 0, 21)
 			ArrayFunction.Visible = false
-			
+
 			TextLabel.Parent = ArrayFunction
 			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 			TextLabel.BackgroundTransparency = 1.000
@@ -929,7 +930,7 @@ function library:Init(info)
 			TextLabel.TextSize = 25.000
 			TextLabel.TextWrapped = true
 			TextLabel.TextXAlignment = Enum.TextXAlignment.Right
-			
+
 			glow.Name = "glow"
 			glow.Parent = ArrayFunction
 			glow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -945,19 +946,19 @@ function library:Init(info)
 			glow.SliceCenter = Rect.new(10, 10, 118, 118)
 
 			resizeArray(ArrayFunction)
-			
+
 			if infoButton.Enabled then
 				ButtonName.TextColor3 = Color3.fromRGB(0, 0, 0)
 				Button.BackgroundColor3 = Color3.fromRGB(138, 152, 255)
 				ArrayFunction.Visible = true
 			end
-			
+
 			Button.MouseButton1Click:Connect(function()
 				infoButton.Enabled = not infoButton.Enabled;
 				ArrayFunction.Visible = infoButton.Enabled
 				Settings[infoButton.Flag].enabled = infoButton.Enabled
 				callback(infoButton.Enabled)
-				
+
 				if infoButton.Enabled then
 					ts:Create(ButtonName, TweenInfo.new(0.5), {
 						TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -974,7 +975,7 @@ function library:Init(info)
 					}):Play()
 				end
 			end)
-			
+
 			Button.MouseButton2Click:Connect(function()
 				infoButton.Open = not infoButton.Open;
 
@@ -996,12 +997,12 @@ function library:Init(info)
 					Size = UDim2.new(0, 217, 0, listAddY)
 				})
 			end)
-			
+
 			local items = {};
-			
+
 			function items:CreateToggle(info, callback)
 				dropdownYsize += 26;
-				
+
 				info.Name = info.Name or "toggle";
 				info.Flag = info.Flag or tostring(info.Name .. "Flag");
 				callback = callback or function() end;
@@ -1012,13 +1013,13 @@ function library:Init(info)
 						enabled = false
 					}
 				end
-				
+
 				local toggleSettings = {
 					enabled = Settings[info.Flag] and Settings[info.Flag].enabled or false
 				}
 
 				info.Enabled = toggleSettings.enabled or info.Enabled or false;
-				
+
 				local slide = Instance.new("Frame")
 				local UICorner_2 = Instance.new("UICorner")
 				local circle = Instance.new("Frame")
@@ -1027,7 +1028,7 @@ function library:Init(info)
 				local Toggle = Instance.new("Frame")
 				local ToggleName = Instance.new("TextLabel")
 				local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-				
+
 				Toggle.Name = "Toggle"
 				Toggle.Parent = Dropdown
 				Toggle.Active = true
@@ -1087,12 +1088,12 @@ function library:Init(info)
 				ToggleName.TextSize = 14.000
 				ToggleName.TextWrapped = true
 				ToggleName.TextXAlignment = Enum.TextXAlignment.Left
-				
+
 				UITextSizeConstraint.Parent = ToggleName
 				UITextSizeConstraint.MaxTextSize = 14
-				
+
 				callback(info.Enabled)
-				
+
 				if info.Enabled then
 					ts:Create(ToggleName, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play();
 					ts:Create(circle, TweenInfo.new(0.5), {
@@ -1101,12 +1102,12 @@ function library:Init(info)
 					}):Play();
 					ts:Create(slide, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(45, 45, 81)}):Play();
 				end
-				
+
 				hitbox.MouseButton1Click:Connect(function()
 					info.Enabled = not info.Enabled;
 					Settings[info.Flag].enabled = info.Enabled
 					callback(info.Enabled);
-					
+
 					if info.Enabled then
 						ts:Create(ToggleName, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play();
 						ts:Create(circle, TweenInfo.new(0.5), {
@@ -1124,10 +1125,10 @@ function library:Init(info)
 					end
 				end)
 			end
-			
+
 			function items:CreateSlider(info, callback)
 				dropdownYsize += 29;
-				
+
 				info.Name = info.Name or "slider";
 				info.Min = info.Min or 1;
 				info.Max = info.Max or 10;
@@ -1140,15 +1141,15 @@ function library:Init(info)
 						ammout = false
 					}
 				end
-				
+
 				local sliderSettings = {
 					ammout = Settings[info.Flag] and Settings[info.Flag].ammout or false
 				}
 
 				info.Value = sliderSettings.ammout or info.Value or (info.Max / 2);
-				
+
 				callback(info.Value)
-				
+
 				local Slider = Instance.new("Frame")
 				local SliderName = Instance.new("TextLabel")
 				local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
@@ -1163,7 +1164,7 @@ function library:Init(info)
 				local UICorner_4 = Instance.new("UICorner")
 				local text = Instance.new("TextLabel")
 				local UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint")
-				
+
 				Slider.Name = "Slider"
 				Slider.Parent = Dropdown
 				Slider.Active = true
@@ -1264,7 +1265,7 @@ function library:Init(info)
 
 				UITextSizeConstraint_2.Parent = text
 				UITextSizeConstraint_2.MaxTextSize = 14
-				
+
 				local conStart
 				local conEnded
 
@@ -1274,7 +1275,7 @@ function library:Init(info)
 					local sliderPos = hitbox.AbsolutePosition.X;
 					local per = math.clamp((mousePos - sliderPos), 0, 201);
 					choosed.Size = UDim2.new(0, per, 0, 5);
-					
+
 					local v = (mousePos - sliderPos) / sliderSize
 					local p = (v / 0.01 + 0.5) * 0.01
 					local circlePos = math.clamp(p, 0, 1);
@@ -1283,7 +1284,7 @@ function library:Init(info)
 					local return_value = (((info.Max - info.Min) / 201) * choosed.AbsoluteSize.X) + info.Min;
 					local a = math.floor(return_value);
 					local c = string.len(a) + 2;
-					
+
 					if info.RecommendedValue > tonumber(string.sub(return_value, 1, c)) then
 						ts:Create(ammout, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(29, 44, 247)}):Play();
 					else
@@ -1304,16 +1305,16 @@ function library:Init(info)
 						return_value = (((info.Max - info.Min) / 201) * choosed.AbsoluteSize.X) + info.Min;
 						a = math.floor(return_value);
 						c = string.len(a) + 2;
-						
+
 						v = (mousePos - sliderPos) / sliderSize
 						p = (v / 0.01 + 0.5) * 0.01
 						circlePos = math.clamp(p, 0, 1);
 						circle.Position = UDim2.new(circlePos - 0.03, 0, -0.5, 0);
-						
+
 						callback(string.sub(return_value, 1, c));
 						Settings[info.Flag].ammout = tostring(string.sub(return_value, 1, c))
 						text.Text = tostring(string.sub(return_value, 1, c));
-						
+
 						if info.RecommendedValue > tonumber(string.sub(return_value, 1, c)) then
 							ts:Create(ammout, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(29, 44, 247)}):Play();
 						else
@@ -1328,13 +1329,13 @@ function library:Init(info)
 					end)
 				end)
 			end
-			
+
 			return items;
 		end
-		
+
 		return custom;
 	end
-	
+
 	return mainUtil;
 end
 
