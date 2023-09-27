@@ -1,1383 +1,1294 @@
-local library = {};
-
-local lp = game:GetService("Players").LocalPlayer;
+getgenv().botClient = false;
+getgenv().AutoParryEnabled = true;
+local players = game:GetService("Players");
+local lp = players.LocalPlayer;
+local rep = game:GetService("ReplicatedStorage");
+local rs = game:GetService("RunService");
+local lighting = game:GetService("Lighting");
 local ts = game:GetService("TweenService");
-local uis = game:GetService("UserInputService");
-local mouse = lp:GetMouse();
-local httpservice = game:GetService("HttpService")
-
-local lettersSize = {
-	a = 11,
-	b = 11,
-	c = 10,
-	d = 11,
-	e = 11,
-	f = 7,
-	g = 13,
-	h = 12,
-	i = 5,
-	j = 7,
-	k = 11,
-	l = 5,
-	m = 20,
-	n = 12,
-	o = 12,
-	p = 11,
-	q = 12,
-	r = 9,
-	s = 9,
-	t = 9,
-	u = 12,
-	v = 10,
-	w = 20,
-	x = 11,
-	y = 11,
-	z = 11
-}
-
-function library:Init()
-	if game:GetService("CoreGui"):FindFirstChild("Protestix") then game:GetService("CoreGui"):FindFirstChild("Protestix"):Destroy() end
-
-	for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "Protestix" then v:Destroy() end end
-
-	local Settings = {
-		KillauraFlag = {
-			enabled = false
-		}
-	}
-
-	local protestix_args = {
-		folderName = "protestix",
-		folder,
-		config
-	}
-	
-	local lol = {};
-
-	protestix_args.folder = isfolder(protestix_args.folderName) or makefolder(protestix_args.folderName)
-	protestix_args.config = isfile(protestix_args.folderName.."\\config.lua") or writefile(protestix_args.folderName.."\\config.lua", httpservice:JSONEncode(Settings))
-
-	local readedCFG = httpservice:JSONDecode(readfile(protestix_args.folderName.."\\config.lua"))
-	Settings = readedCFG
-
-	spawn(function()
-		while task.wait(3) do
-			writefile(protestix_args.folderName.."\\config.lua", httpservice:JSONEncode(Settings))
-		end
-	end)
-
-	--[[
-	for moduleName,moduleTable in pairs(test) do
-		print(moduleName)
-		for moduleFunction, functionSetting in pairs(moduleTable) do
-			print(moduleFunction, functionSetting)
-		end
-	end]]
-
-	lol.watermark = false;
-	lol.acIndicator = false;
-
-	local Protestix = Instance.new("ScreenGui")
-	local Tabs = Instance.new("Frame")
-	local UIListLayout_3 = Instance.new("UIListLayout")
-	local Background = Instance.new("Frame")
-	local Modal = Instance.new("TextButton")
-
-	Protestix.Name = "Protestix"
-
-	--Protestix.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-	Protestix.Parent = (game:GetService("CoreGui") or gethui());
-
-	Protestix.ResetOnSpawn = false
-
-	Tabs.Name = "Tabs"
-	Tabs.Parent = Protestix
-	Tabs.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Tabs.BackgroundTransparency = 1.000
-	Tabs.BorderSizePixel = 0
-	Tabs.Position = UDim2.new(0.04, 0, 0.11, 0)
-	Tabs.Size = UDim2.new(0, 1210, 0, 245)
-
-	Background.Name = "Background"
-	Background.Parent = Protestix
-	Background.AnchorPoint = Vector2.new(0.5, 0.5)
-	Background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	Background.BackgroundTransparency = 0.300
-	Background.BorderSizePixel = 0
-	Background.Position = UDim2.new(0.5, 0, 0.5, 0)
-	Background.Size = UDim2.new(0, 1514, 0, 761)
-	Background.Visible = false
-
-	Modal.Name = "Modal"
-	Modal.Parent = Protestix
-	Modal.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Modal.BackgroundTransparency = 1.000
-	Modal.BorderSizePixel = 0
-	Modal.Position = UDim2.new(0.430303037, 0, 0.53174603, 0)
-	Modal.Size = UDim2.new(0, 1, 0, 1)
-	Modal.Modal = true
-	Modal.Font = Enum.Font.SourceSans
-	Modal.Text = ""
-	Modal.TextColor3 = Color3.fromRGB(0, 0, 0)
-	Modal.TextSize = 14.000
-
-	UIListLayout_3.Parent = Tabs
-	UIListLayout_3.FillDirection = Enum.FillDirection.Horizontal
-	UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout_3.Padding = UDim.new(0, 15)
-
-	-- Notification
-
-	local Notifications = Instance.new("Frame")
-	local UIListLayout = Instance.new("UIListLayout")
-
-	Notifications.Name = "Notifications"
-	Notifications.Parent = Protestix
-	Notifications.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Notifications.BackgroundTransparency = 1.000
-	Notifications.BorderColor3 = Color3.fromRGB(27, 42, 53)
-	Notifications.BorderSizePixel = 0
-	Notifications.Position = UDim2.new(0.755303025, 0, 0.68095237, 0)
-	Notifications.Size = UDim2.new(0, 314, 0, 190)
-
-	UIListLayout.Parent = Notifications
-	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-	UIListLayout.Padding = UDim.new(0, 10)
-
-	-- Watermark
-
-	local Watermark = Instance.new("Frame")
-	local UICorner = Instance.new("UICorner")
-	local UIStroke = Instance.new("UIStroke")
-	local UIGradient = Instance.new("UIGradient")
-	local UIGradient_2 = Instance.new("UIGradient")
-	local ClientName = Instance.new("TextLabel")
-	local UIGradient_3 = Instance.new("UIGradient")
-	local glow = Instance.new("ImageLabel")
-	local uarc = Instance.new("UIAspectRatioConstraint")
-
-	Watermark.Name = "Watermark"
-	Watermark.Parent = Protestix
-	Watermark.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-	Watermark.BorderSizePixel = 0
-	Watermark.Position = UDim2.new(0.0116383489, 0, 0.0122699738, 0)
-	Watermark.Size = UDim2.new(0.109756097, 0, 0.0398772992, 0)
-	Watermark.Visible = lol.watermark
-
-	UICorner.CornerRadius = UDim.new(0, 5)
-	UICorner.Parent = Watermark
-
-	UIStroke.Color = Color3.fromRGB(29, 44, 247)
-	UIStroke.Thickness = 2.000
-	UIStroke.Parent = Watermark
-
-	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient.Parent = UIStroke
-
-	UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient_2.Parent = Watermark
-
-	ClientName.Name = "ClientName"
-	ClientName.Parent = Watermark
-	ClientName.AnchorPoint = Vector2.new(0.5, 0.5)
-	ClientName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ClientName.BackgroundTransparency = 1.000
-	ClientName.Position = UDim2.new(0.503927052, 0, 0.500768781, 0)
-	ClientName.Size = UDim2.new(0.923611104, 0, 0.653846145, 0)
-	ClientName.ZIndex = 2
-	ClientName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-	ClientName.Text = "protestix | fps: 60"
-	ClientName.TextColor3 = Color3.fromRGB(99, 135, 255)
-	ClientName.TextScaled = true
-	ClientName.TextSize = 14.000
-	ClientName.TextWrapped = true
-	ClientName.TextXAlignment = Enum.TextXAlignment.Left
-
-	UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient_3.Parent = ClientName
-
-	glow.Name = "glow"
-	glow.Parent = Watermark
-	glow.BackgroundColor3 = Color3.fromRGB(14, 10, 24)
-	glow.BackgroundTransparency = 1.000
-	glow.BorderSizePixel = 0
-	glow.Position = UDim2.new(-0.143445328, 0, -0.777607858, 0)
-	glow.Size = UDim2.new(1.29166651, 0, 2.5, 0)
-	glow.ZIndex = 0
-	glow.Image = "rbxassetid://13494443093"
-	glow.ImageColor3 = Color3.fromRGB(30, 49, 255)
-
-	uarc.Parent = Watermark
-	uarc.AspectType = Enum.AspectType.FitWithinMaxSize
-	uarc.DominantAxis = Enum.DominantAxis.Width
-	uarc.AspectRatio = 5.5
-
-	-- 
-
-	uis.InputBegan:Connect(function(input, gameProcessed)
-		if (input.KeyCode == Enum.KeyCode.Insert) or (input.KeyCode == Enum.KeyCode.RightShift) then
-			Tabs.Visible = not Tabs.Visible;
-			Modal.Visible = not Modal.Visible;
-		end
-	end)
-
-	local mainUtil = {};
-
-	-- TargetHud
-
-	local TargetHud = Instance.new("Frame")
-	local UICorner = Instance.new("UICorner")
-	local PlayerAvatar = Instance.new("ImageLabel")
-	local UICorner_2 = Instance.new("UICorner")
-	local PlayerName = Instance.new("TextLabel")
-	local HealthBar = Instance.new("Frame")
-	local UICorner_3 = Instance.new("UICorner")
-	local hpText = Instance.new("TextLabel")
-	local UIGradient = Instance.new("UIGradient")
-	local glow = Instance.new("ImageLabel")
-	local UIStroke = Instance.new("UIStroke")
-	local UIGradient_2 = Instance.new("UIGradient")	
-	local uarc = Instance.new("UIAspectRatioConstraint")
-
-	TargetHud.Name = "TargetHud"
-	TargetHud.Parent = Protestix
-	TargetHud.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-	TargetHud.BorderSizePixel = 0
-	TargetHud.ClipsDescendants = true
-	TargetHud.Position = UDim2.new(0.413871944, 0, 0.739263833, 0)
-	TargetHud.Size = UDim2.new(0.175304875, 0, 0.119631901, 0)
-
-	UICorner.Parent = TargetHud
-
-	PlayerAvatar.Name = "PlayerAvatar"
-	PlayerAvatar.Parent = TargetHud
-	PlayerAvatar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	PlayerAvatar.BackgroundTransparency = 1.000
-	PlayerAvatar.BorderSizePixel = 0
-	PlayerAvatar.Position = UDim2.new(0.0347826071, 0, 0.115384616, 0)
-	PlayerAvatar.Size = UDim2.new(0.260869563, 0, 0.769230783, 0)
-	PlayerAvatar.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-
-	UICorner_2.Parent = PlayerAvatar
-
-	PlayerName.Name = "PlayerName"
-	PlayerName.Parent = TargetHud
-	PlayerName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	PlayerName.BackgroundTransparency = 1.000
-	PlayerName.BorderSizePixel = 0
-	PlayerName.Position = UDim2.new(0.347826093, 0, 0.115384616, 0)
-	PlayerName.Size = UDim2.new(0.608695626, 0, 0.192307696, 0)
-	PlayerName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.Medium)
-	PlayerName.Text = "PlayerName"
-	PlayerName.TextColor3 = Color3.fromRGB(233, 223, 224)
-	PlayerName.TextScaled = true
-	PlayerName.TextSize = 15.000
-	PlayerName.TextWrapped = true
-	PlayerName.TextXAlignment = Enum.TextXAlignment.Left
-
-	HealthBar.Name = "HealthBar"
-	HealthBar.Parent = TargetHud
-	HealthBar.BackgroundColor3 = Color3.fromRGB(29, 44, 247)
-	HealthBar.BorderSizePixel = 0
-	HealthBar.Position = UDim2.new(0.347826093, 0, 0.730769217, 0)
-	HealthBar.Size = UDim2.new(0.621739149, 0, 0.15384616, 0)
-
-	UICorner_3.CornerRadius = UDim.new(0, 3)
-	UICorner_3.Parent = HealthBar
-
-	hpText.Name = "hpText"
-	hpText.Parent = TargetHud
-	hpText.AnchorPoint = Vector2.new(0.5, 0.5)
-	hpText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	hpText.BackgroundTransparency = 1.000
-	hpText.LayoutOrder = 0
-	hpText.Position = UDim2.new(0.649, 0, 0.816, 0)
-	hpText.Size = UDim2.new(0.337, 0, 0.179, 0)
-	hpText.ZIndex = 2
-	hpText.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-	hpText.Text = "0"
-	hpText.TextColor3 = Color3.fromRGB(233, 223, 224)
-	hpText.TextSize = 24.000
-	hpText.TextScaled = true
-	hpText.TextWrapped = true
-
-	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient.Parent = HealthBar
-
-	glow.Name = "glow"
-	glow.Parent = HealthBar
-	glow.BackgroundColor3 = Color3.fromRGB(29, 44, 247)
-	glow.BackgroundTransparency = 1.000
-	glow.BorderSizePixel = 0
-	glow.Position = UDim2.new(-0.0784630403, 0, -0.763509095, 0)
-	glow.Size = UDim2.new(1.15209794, 0, 2.43205261, 0)
-	glow.Image = "rbxassetid://13494443093"
-	glow.ImageColor3 = Color3.fromRGB(30, 49, 255)
-
-	UIStroke.Color = Color3.fromRGB(47, 75, 255)
-	UIStroke.Thickness = 2.000
-	UIStroke.Parent = TargetHud
-
-	UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient_2.Parent = UIStroke
-
-	uarc.Parent = TargetHud
-	uarc.AspectType = Enum.AspectType.FitWithinMaxSize
-	uarc.DominantAxis = Enum.DominantAxis.Width
-	uarc.AspectRatio = 2.95
-
-	function mainUtil:TargetHud(info)
-		info.Player = info.Player or false;
-		info.Health = info.Health or 100;
-		info.MaxHealth = info.MaxHealth or 100;
-
-		if info.Player ~= false then
-			ts:Create(TargetHud, TweenInfo.new(0.3), {Size = UDim2.new(0, 230, 0, 78)}):Play();
-
-			PlayerAvatar.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-
-			PlayerName.Text = info.Player.Name;
-			hpText.Text = tostring(info.Health);
-
-			ts:Create(HealthBar, TweenInfo.new(0.1), {Size = UDim2.new(info.Health / info.MaxHealth * 0.622, 0, 0.154, 0)}):Play();
-		elseif info.Player == false then
-			ts:Create(TargetHud, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0)}):Play();
+local coreGui = game:GetService("CoreGui");
+local camera = workspace.CurrentCamera;
+local balls = workspace:WaitForChild("Balls");
+local remotesStorage = rep:WaitForChild("Remotes");
+local cdUI = coreGui:FindFirstChild("cdUI") or game:GetObjects("rbxassetid://14817688991")[1];
+cdUI.Name = "cdUI";
+cdUI.Parent = coreGui;
+local textl = cdUI:FindFirstChild("TextLabel");
+local function findBall()
+	local FlatIdent_95CAC = 0;
+	local self;
+	while true do
+		if (FlatIdent_95CAC == 0) then
+			self = balls:FindFirstChildOfClass("Part");
+			return self;
 		end
 	end
-
-	-- Notification
-
-	function mainUtil:Notification(info)
-		info.Name = info.Name or "notification";
-		info.Description = info.Description or false;
-		info.Seconds = info.Seconds or 1;
-
-		local Notification = Instance.new("Frame")
-		local mainName = Instance.new("TextLabel")
-		local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-		local UIGradient = Instance.new("UIGradient")
-		local status = Instance.new("TextLabel")
-		local UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint")
-		local UIGradient_2 = Instance.new("UIGradient")
-		local UICorner = Instance.new("UICorner")
-		local UIStroke = Instance.new("UIStroke")
-		local UIGradient_3 = Instance.new("UIGradient")
-
-		Notification.Name = "Notification"
-		Notification.Parent = Notifications
-		Notification.BackgroundColor3 = Color3.fromRGB(10, 11, 18)
-		Notification.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		Notification.BorderSizePixel = 0
-		Notification.ClipsDescendants = true
-		Notification.Position = UDim2.new(0.368785799, 0, 0.776234984, 0)
-		Notification.Size = UDim2.new(0, 0, 0, 0) -- UDim2.new(0, 197, 0, 44)
-		Notification.BackgroundTransparency = 1
-
-		ts:Create(Notification, TweenInfo.new(0.3), {Size = UDim2.new(0, 197, 0, 44)}):Play()
-
-		mainName.Name = "mainName"
-		mainName.Parent = Notification
-		mainName.AnchorPoint = Vector2.new(0.5, 0.5)
-		mainName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		mainName.BackgroundTransparency = 1.000
-		mainName.BorderSizePixel = 0
-		mainName.Position = UDim2.new(0.294923872, 0, 0.354545474, 0)
-		mainName.Size = UDim2.new(0, 95, 0, 19)
-		mainName.ZIndex = 2
-		mainName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-		mainName.Text = info.Name
-		mainName.TextColor3 = Color3.fromRGB(170, 170, 170)
-		mainName.TextScaled = true
-		mainName.TextSize = 14.000
-		mainName.TextWrapped = true
-		mainName.TextXAlignment = Enum.TextXAlignment.Left
-		mainName.TextTransparency = 1
-
-		UITextSizeConstraint.Parent = mainName
-		UITextSizeConstraint.MaxTextSize = 24
-
-		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-		UIGradient.Rotation = 180
-		UIGradient.Parent = mainName
-
-		status.Name = "status"
-		status.Parent = Notification
-		status.AnchorPoint = Vector2.new(0.5, 0.5)
-		status.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		status.BackgroundTransparency = 1.000
-		status.BorderSizePixel = 0
-		status.Position = UDim2.new(0.23984772, 0, 0.769909143, 0)
-		status.Size = UDim2.new(0, 74, 0, 19)
-		status.ZIndex = 2
-		status.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-		status.Text = "Disabled"
-		status.TextColor3 = Color3.fromRGB(65, 93, 255)
-		status.TextScaled = true
-		status.TextSize = 14.000
-		status.TextWrapped = true
-		status.TextXAlignment = Enum.TextXAlignment.Left
-		status.TextTransparency = 1
-
-		UITextSizeConstraint_2.Parent = status
-		UITextSizeConstraint_2.MaxTextSize = 15
-
-		UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-		UIGradient_2.Rotation = 180
-		UIGradient_2.Parent = status
-
-		UICorner.CornerRadius = UDim.new(0, 5)
-		UICorner.Parent = Notification
-
-		UIStroke.Color = Color3.fromRGB(29, 44, 247)
-		UIStroke.Thickness = 2.000
-		UIStroke.Parent = Notification
-		UIStroke.Transparency = 1
-
-		UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-		UIGradient_3.Parent = UIStroke
-
-		ts:Create(Notification, TweenInfo.new(0.7), {BackgroundTransparency = 0}):Play()
-		ts:Create(UIStroke, TweenInfo.new(0.7), {Transparency = 0}):Play()
-		ts:Create(status, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
-		ts:Create(mainName, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
-
-		if info.Status == true then
-			status.Text = "Enabled";
-			status.TextColor3 = Color3.fromRGB(76, 222, 144);
-		elseif info.Status == false then
-			status.Text = "Disabled";
-		else
-			status.Text = info.Status;
-			status.TextColor3 = Color3.fromRGB(167, 167, 167);
-		end
-
-		task.spawn(function()
-			task.wait(info.Seconds);
-
-			ts:Create(Notification, TweenInfo.new(0.3), {
-				Size = UDim2.new(0, 0, 0, 0)
-			}):Play();
-
-			ts:Create(Notification, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-			ts:Create(UIStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
-			ts:Create(status, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
-			ts:Create(mainName, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
-
-			game:GetService("Debris"):AddItem(Notification, 0.3);
-		end)
-	end
-
-	-- AntiCheat check
-
-	local antiCheatSettings = {
-		ammout = 100,
-		moving = false,
-		blocked = false,
-		high = 1
-	}
-
-	local AntiCheatInfo = Instance.new("Frame")
-	local UIGradient = Instance.new("UIGradient")
-	local UICorner = Instance.new("UICorner")
-	local UIStroke = Instance.new("UIStroke")
-	local UIGradient_2 = Instance.new("UIGradient")
-	local ammout = Instance.new("TextLabel")
-	local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-	local Bar = Instance.new("Frame")
-	local UIGradient_3 = Instance.new("UIGradient")
-	local UICorner_2 = Instance.new("UICorner")
-	local UIStroke_2 = Instance.new("UIStroke")
-	local UIGradient_4 = Instance.new("UIGradient")
-	local glow = Instance.new("ImageLabel")
-
-	AntiCheatInfo.Name = "AntiCheatInfo"
-	AntiCheatInfo.Parent = Protestix
-	AntiCheatInfo.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-	AntiCheatInfo.BorderSizePixel = 0
-	AntiCheatInfo.Position = UDim2.new(0.434, 0, 0.94, 0)
-	AntiCheatInfo.Size = UDim2.new(0.132, 0, 0.031, 0)
-	AntiCheatInfo.Visible = lol.acIndicator;
-
-	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient.Parent = AntiCheatInfo
-
-	UICorner.CornerRadius = UDim.new(0, 3)
-	UICorner.Parent = AntiCheatInfo
-
-	UIStroke.Color = Color3.fromRGB(23, 25, 42)
-	UIStroke.Thickness = 2.000
-	UIStroke.Parent = AntiCheatInfo
-
-	UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient_2.Parent = UIStroke
-
-	ammout.Name = "ammout"
-	ammout.Parent = AntiCheatInfo
-	ammout.AnchorPoint = Vector2.new(0.5, 0.5)
-	ammout.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ammout.BackgroundTransparency = 1.000
-	ammout.LayoutOrder = 2
-	ammout.Position = UDim2.new(0.511413932, 0, 0.507955909, 0)
-	ammout.Size = UDim2.new(0.287356347, 0, 0.850000024, 0)
-	ammout.ZIndex = 2
-	ammout.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-	ammout.Text = antiCheatSettings.ammout .. "%"
-	ammout.TextColor3 = Color3.fromRGB(233, 223, 224)
-	ammout.TextScaled = true
-	ammout.TextSize = 24.000
-	ammout.TextWrapped = true
-
-	UITextSizeConstraint.Parent = ammout
-	UITextSizeConstraint.MaxTextSize = 24
-
-	Bar.Name = "Bar"
-	Bar.Parent = AntiCheatInfo
-	Bar.BackgroundColor3 = Color3.fromRGB(29, 44, 247)
-	Bar.BorderSizePixel = 0
-	Bar.Size = UDim2.new(1, 0, 1, 0)
-
-	UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient_3.Parent = Bar
-
-	UICorner_2.CornerRadius = UDim.new(0, 3)
-	UICorner_2.Parent = Bar
-
-	UIStroke_2.Color = Color3.fromRGB(47, 75, 255)
-	UIStroke_2.Thickness = 2.000
-	UIStroke_2.Parent = Bar
-
-	UIGradient_4.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(144, 144, 144)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-	UIGradient_4.Parent = UIStroke_2
-
-	glow.Name = "glow"
-	glow.Parent = Bar
-	glow.BackgroundColor3 = Color3.fromRGB(29, 44, 247)
-	glow.BackgroundTransparency = 1.000
-	glow.BorderSizePixel = 0
-	glow.Position = UDim2.new(-0.106435083, 0, -0.846838355, 0)
-	glow.Size = UDim2.new(1.25, 0, 2.76538515, 0)
-	glow.ZIndex = 0
-	glow.Image = "rbxassetid://13494443093"
-	glow.ImageColor3 = Color3.fromRGB(30, 49, 255)
-
-	spawn(function()
-		while task.wait() do
-			if antiCheatSettings.ammout < 100 and not antiCheatSettings.moving then
-				antiCheatSettings.blocked = false
-				repeat
-					antiCheatSettings.ammout += 20
-					if antiCheatSettings.ammout > 100 then
-						antiCheatSettings.ammout = 100
-					end
-					ammout.Text = math.floor(antiCheatSettings.ammout) .. "%"
-					ts:Create(Bar, TweenInfo.new(0.3), {Size = UDim2.new((antiCheatSettings.ammout / 100) * 1, 0, 1, 0)}):Play()
-					task.wait(0.1)
-				until antiCheatSettings.ammout > 99 or antiCheatSettings.moving
-			else
-				if 1 < antiCheatSettings.ammout then
-					antiCheatSettings.blocked = false
-					repeat
-						antiCheatSettings.ammout -= antiCheatSettings.high
-						if antiCheatSettings.ammout < 1 then
-							antiCheatSettings.ammout = 0
-						end
-						ts:Create(Bar, TweenInfo.new(0.3), {Size = UDim2.new((antiCheatSettings.ammout / 100) * 1, 0, 1, 0)}):Play()
-						ammout.Text = math.floor(antiCheatSettings.ammout) .. "%"
-						task.wait()
-					until not antiCheatSettings.moving or antiCheatSettings.ammout < 1
-				else
-					antiCheatSettings.blocked = true
-				end
-			end
-		end
-	end)
-
-	function mainUtil:AnticheatState(info, callback)
-		info.moving = info.moving or false;
-		info.high = info.high or 1;
-		callback = callback or function() end;
-
-		antiCheatSettings.moving = info.moving;
-		antiCheatSettings.high = info.high;
-		callback(antiCheatSettings.blocked)
-	end
-
-	-- ArrayList
-
-	local Arraylist = Instance.new("Frame")
-	local UIListLayout = Instance.new("UIListLayout")
-
-	Arraylist.Name = "Arraylist"
-	Arraylist.Parent = Protestix
-	Arraylist.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Arraylist.BackgroundTransparency = 1.000
-	Arraylist.BorderSizePixel = 0
-	Arraylist.Position = UDim2.new(0.876722813, 0, 0.0214723926, 0)
-	Arraylist.Size = UDim2.new(0, 151, 0, 632)
-
-	UIListLayout.Parent = Arraylist
-	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-	function resizeArray(obj)
-		if obj:IsA("GuiObject") then
-			if obj:FindFirstChildOfClass("TextLabel") then
-				local text = obj:FindFirstChildOfClass("TextLabel")
-				local textLength = string.len(text.Text)
-				print(text.Text)
-
-				obj.Size = UDim2.new(0, 0, 0, 21)
-				text.Size = UDim2.new(0, 0, 0, 21)
-
-				task.spawn(function()
-					for t = 1, textLength do
-						local letter = string.sub(text.Text, t, t)
-						if lettersSize[string.lower(letter)] then
-							obj.Size = UDim2.new(0, obj.Size.X.Offset + lettersSize[string.lower(letter)], 0, 21)
-						else
-							obj.Size = UDim2.new(0, obj.Size.X.Offset + 11, 0, 21)
-						end
-					end
-				end)
-				text.Size = obj.Size
-				text.Position = UDim2.new(0, 0, 0, 0)
-				v.LayoutOrder = textLength
-
-				if obj:FindFirstChildOfClass("ImageLabel") then
-					local il = obj:FindFirstChildOfClass("ImageLabel")
-					il.Size = UDim2.new(0, obj.Size.X.Offset + 15, 0, 36)
-					il.Position = UDim2.new(0.5, 0, 0.5, 0)
-				end
-			end
-		end
-	end
-
-	function mainUtil:CreateTab(info)
-		local ButtonLayout = 0;
-
-		info.Name = info.Name or "tab";
-		local listAddY = 0;
-
-		local Tab = Instance.new("Frame")
-		local UICorner = Instance.new("UICorner")
-		local Frame = Instance.new("Frame")
-		local List = Instance.new("Frame")
-		local UIListLayout = Instance.new("UIListLayout")
-		local TabName = Instance.new("TextLabel")
-		local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-		local uiPadding = Instance.new("UIPadding")
-
-		Tab.Name = "Tab"
-		Tab.Parent = Tabs
-		Tab.AnchorPoint = Vector2.new(0.5, 0.5)
-		Tab.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-		Tab.BorderSizePixel = 0
-		Tab.Position = UDim2.new(0.49999997, 0, 0.268253982, 0)
-		Tab.Size = UDim2.new(0, 217, 0, 36)
-		Tab.ZIndex = 2
-		Tab.Active = true
-		Tab.Draggable = true
-
-		UICorner.Parent = Tab
-
-		Frame.Parent = Tab
-		Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-		Frame.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-		Frame.BorderSizePixel = 0
-		Frame.Position = UDim2.new(0.5, 0, 0.698809743, 0)
-		Frame.Size = UDim2.new(0, 217, 0, 21)
-		Frame.ZIndex = 2
-
-		List.Name = "List"
-		List.Parent = Tab
-		List.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-		List.BorderSizePixel = 0
-		List.Position = UDim2.new(0, 0, 0.833332896, 0)
-		List.Size = UDim2.new(0, 217, 0, 6)
-
-		UIListLayout.Parent = List
-		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-		TabName.Name = info.Name
-		TabName.Parent = Tab
-		TabName.AnchorPoint = Vector2.new(0.5, 0.5)
-		TabName.BackgroundColor3 = Color3.fromRGB(233, 223, 224)
-		TabName.BackgroundTransparency = 1.000
-		TabName.Position = UDim2.new(0.497695863, 0, 0.478571594, 0)
-		TabName.Size = UDim2.new(0, 193, 0, 18)
-		TabName.ZIndex = 2
-		TabName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-		TabName.Text = info.Name
-		TabName.TextColor3 = Color3.fromRGB(255, 255, 255)
-		TabName.TextScaled = true
-		TabName.TextSize = 14.000
-		TabName.TextWrapped = true
-
-		uiPadding.Parent = List
-		uiPadding.PaddingTop = UDim.new(0, 6)
-
-		UITextSizeConstraint.Parent = TabName
-		UITextSizeConstraint.MaxTextSize = 18
-
-		local custom = {};
-
-		function custom:CreateButton(infoButton, callback)
-			ButtonLayout += 1;
-
-			listAddY += 27;	
-			ts:Create(List, TweenInfo.new(1), {
-				Size = UDim2.new(0, 217, 0, listAddY)
-			}):Play();
-
-			infoButton.Name = infoButton.Name or "button";
-			infoButton.Dropdown = infoButton.Dropdown or {};
-			infoButton.Open = infoButton.Open or false;
-			infoButton.Flag = infoButton.Flag or tostring(info.Name .. "Flag");
-			callback = callback or function() end;
-
-			if not Settings[infoButton.Flag] then
-				Settings[infoButton.Flag] = {
-					enabled = false
-				}
-			end
-
-			local buttonSettings = {
-				enabled = Settings[infoButton.Flag] and Settings[infoButton.Flag].enabled or false
-			}
-
-			callback(buttonSettings.enabled);
-			infoButton.Enabled = buttonSettings.enabled;
-
-			local waitingToPress = false;
-			local key = nil;
-
-			local dropdownYsize = 0;
-
-			local Button = Instance.new("TextButton")
-			local ButtonName = Instance.new("TextLabel")
-			local Dropdown = Instance.new("Frame")
-
-			local UIListLayout = Instance.new("UIListLayout")
-			local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-
-			Button.Name = "Button"
-			Button.Parent = List
-			Button.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-			Button.BorderSizePixel = 0
-			Button.Position = UDim2.new(0, 0, 0.143, 0)
-			Button.Size = UDim2.new(0, 217, 0, 27)
-			Button.ZIndex = 2
-			Button.Font = Enum.Font.SourceSans
-			Button.Text = ""
-			Button.TextColor3 = Color3.fromRGB(0, 0, 0)
-			Button.TextSize = 14.000
-			Button.AutoButtonColor = false
-			Button.AnchorPoint = Vector2.new(0.5, 0.5)
-			Button.LayoutOrder = ButtonLayout;
-
-			ButtonName.Name = infoButton.Name
-			ButtonName.Parent = Button
-			ButtonName.AnchorPoint = Vector2.new(0.5, 0.5)
-			ButtonName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			ButtonName.BackgroundTransparency = 1.000
-			ButtonName.Position = UDim2.new(0.5, 0, 0.484126896, 0)
-			ButtonName.Size = UDim2.new(0, 199, 0, 19)
-			ButtonName.ZIndex = 2
-			ButtonName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-			ButtonName.Text = infoButton.Name
-			ButtonName.TextColor3 = Color3.fromRGB(163, 163, 163)
-			ButtonName.TextScaled = true
-			ButtonName.TextSize = 24.000
-			ButtonName.TextWrapped = true
-			ButtonName.TextXAlignment = Enum.TextXAlignment.Left
-
-			Dropdown.Name = "Dropdown"
-			Dropdown.Parent = List
-			Dropdown.BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-			Dropdown.BorderSizePixel = 0
-			Dropdown.ClipsDescendants = true
-			Dropdown.Position = UDim2.new(0, 0, 1.116, 0)
-			Dropdown.Size = UDim2.new(0, 217, 0, 0)
-			Dropdown.ClipsDescendants = true
-			Dropdown.LayoutOrder = ButtonLayout;
-
-			UIListLayout.Parent = Dropdown
-			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-			UITextSizeConstraint.Parent = ButtonName
-			UITextSizeConstraint.MaxTextSize = 17
-
-			local keybind = Instance.new("TextButton")
-			local keybindName = Instance.new("TextLabel")
-			local UITextSizeConstraint2 = Instance.new("UITextSizeConstraint")
-
-			keybind.Name = "keybind"
-			keybind.Parent = Button
-			keybind.Active = false
-			keybind.AnchorPoint = Vector2.new(0.5, 0.5)
-			keybind.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			keybind.BackgroundTransparency = 1.000
-			keybind.Position = UDim2.new(0.899, 0, 0.484, 0)
-			keybind.Selectable = false
-			keybind.Size = UDim2.new(0, 20, 0, 20)
-			keybind.ZIndex = 2
-			keybind.Text = ""
-			keybind.TextColor3 = Color3.fromRGB(163, 163, 163)
-			keybind.TextScaled = true
-			keybind.TextSize = 24.000
-			keybind.TextWrapped = true
-
-			keybindName.Name = "keybindName"
-			keybindName.Parent = keybind
-			keybindName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			keybindName.BackgroundTransparency = 1.000
-			keybindName.Size = UDim2.new(0, 20, 0, 20)
-			keybindName.ZIndex = 2
-			keybindName.FontFace = Font.new("rbxasset://fonts/families/Nunito.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-			keybindName.Text = " ... "
-			keybindName.TextColor3 = Color3.fromRGB(45, 47, 56)
-			keybindName.TextScaled = true
-			keybindName.TextSize = 24.000
-			keybindName.TextWrapped = true
-
-			UITextSizeConstraint2.Parent = keybindName
-			UITextSizeConstraint2.MaxTextSize = 17
-
-			keybind.MouseButton1Click:Connect(function()
-				if not waitingToPress then
-					waitingToPress = true
-				end
-			end)
-
-			uis.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.Keyboard then
-					if key ~= nil then
-						if input.KeyCode == key then
-							infoButton.Enabled = not infoButton.Enabled;
-							ArrayFunction.Visible = infoButton.Enabled
-							Settings[infoButton.Flag].enabled = infoButton.Enabled
-							callback(infoButton.Enabled)
-
-							if infoButton.Enabled then
-								ts:Create(ButtonName, TweenInfo.new(0.5), {
-									TextColor3 = Color3.fromRGB(0, 0, 0)
-								}):Play()
-								ts:Create(Button, TweenInfo.new(0.5), {
-									BackgroundColor3 = Color3.fromRGB(138, 152, 255)
-								}):Play()
-							else
-								ts:Create(ButtonName, TweenInfo.new(0.5), {
-									TextColor3 = Color3.fromRGB(163, 163, 163)
-								}):Play()
-								ts:Create(Button, TweenInfo.new(0.5), {
-									BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-								}):Play()
-							end
-						end
-					end
-
-					if input.KeyCode == Enum.KeyCode.Backspace then
-						if waitingToPress then
-							waitingToPress = false
-							key = nil
-							keybindName.Text = " ... "
-							keybindName.TextColor3 = Color3.fromRGB(45, 47, 56)
-						end
-					end
-
-					if input.KeyCode == Enum.KeyCode.Return then
-						if waitingToPress then
-							waitingToPress = false;
-							if key ~= nil then
-								keybindName.Text = tostring(uis:GetStringForKeyCode(key))
-								keybindName.TextColor3 = Color3.fromRGB(163, 163, 163)
-							end
-						end
-					else
-						if waitingToPress then
-							key = input.KeyCode;
-							keybindName.Text = tostring(uis:GetStringForKeyCode(key))
-							keybindName.TextColor3 = Color3.fromRGB(163, 163, 163)
-							waitingToPress = false
-						end
-					end
-				end
-			end)
-
-			local ArrayFunction = Instance.new("Frame")
-			local TextLabel = Instance.new("TextLabel")
-			local glow = Instance.new("ImageLabel")
-
-			ArrayFunction.Parent = Arraylist
-			ArrayFunction.BackgroundColor3 = Color3.fromRGB(10, 11, 18)
-			ArrayFunction.BorderSizePixel = 0
-			ArrayFunction.Position = UDim2.new(0.337748349, 0, -0.00126582163, 0)
-			ArrayFunction.Size = UDim2.new(0, 100, 0, 21)
-			ArrayFunction.Visible = false
-
-			TextLabel.Parent = ArrayFunction
-			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-			TextLabel.BackgroundTransparency = 1.000
-			TextLabel.BorderSizePixel = 0
-			TextLabel.Size = UDim2.new(0, 100, 0, 21)
-			TextLabel.ZIndex = 2
-			TextLabel.Font = Enum.Font.Unknown
-			TextLabel.Text = string.lower(infoButton.Name)
-			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-			TextLabel.TextScaled = true
-			TextLabel.TextSize = 25.000
-			TextLabel.TextWrapped = true
-			TextLabel.TextXAlignment = Enum.TextXAlignment.Right
-
-			glow.Name = "glow"
-			glow.Parent = ArrayFunction
-			glow.AnchorPoint = Vector2.new(0.5, 0.5)
-			glow.BackgroundTransparency = 1.000
-			glow.BorderSizePixel = 0
-			glow.Position = UDim2.new(0.5, 0, 0.5, 0)
-			glow.Size = UDim2.new(0, 100, 0, 36)
-			glow.ZIndex = 0
-			glow.Image = "rbxassetid://1316045217"
-			glow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-			glow.ImageTransparency = 0.510
-			glow.ScaleType = Enum.ScaleType.Slice
-			glow.SliceCenter = Rect.new(10, 10, 118, 118)
-
-			resizeArray(ArrayFunction)
-
-			if infoButton.Enabled then
-				ButtonName.TextColor3 = Color3.fromRGB(0, 0, 0)
-				Button.BackgroundColor3 = Color3.fromRGB(138, 152, 255)
-				ArrayFunction.Visible = true
-			end
-
-			Button.MouseButton1Click:Connect(function()
-				infoButton.Enabled = not infoButton.Enabled;
-				ArrayFunction.Visible = infoButton.Enabled
-				Settings[infoButton.Flag].enabled = infoButton.Enabled
-				callback(infoButton.Enabled)
-
-				if infoButton.Enabled then
-					ts:Create(ButtonName, TweenInfo.new(0.5), {
-						TextColor3 = Color3.fromRGB(0, 0, 0)
-					}):Play()
-					ts:Create(Button, TweenInfo.new(0.5), {
-						BackgroundColor3 = Color3.fromRGB(138, 152, 255)
-					}):Play()
-				else
-					ts:Create(ButtonName, TweenInfo.new(0.5), {
-						TextColor3 = Color3.fromRGB(163, 163, 163)
-					}):Play()
-					ts:Create(Button, TweenInfo.new(0.5), {
-						BackgroundColor3 = Color3.fromRGB(13, 14, 24)
-					}):Play()
-				end
-			end)
-
-			Button.MouseButton2Click:Connect(function()
-				infoButton.Open = not infoButton.Open;
-
-				if infoButton.Open then
-					listAddY += dropdownYsize;
-
-					ts:Create(Dropdown, TweenInfo.new(0.5), {
-						Size = UDim2.new(0, 217, 0, dropdownYsize)
-					}):Play()
-				else
-					listAddY -= dropdownYsize;
-
-					ts:Create(Dropdown, TweenInfo.new(0.5), {
-						Size = UDim2.new(0, 217, 0, 0),
-					}):Play()
-				end
-
-				ts:Create(List, TweenInfo.new(0.5), {
-					Size = UDim2.new(0, 217, 0, listAddY)
-				})
-			end)
-
-			local items = {};
-
-			function items:CreateToggle(info, callback)
-				dropdownYsize += 26;
-
-				info.Name = info.Name or "toggle";
-				info.Flag = info.Flag or tostring(info.Name .. "Flag");
-				callback = callback or function() end;
-
-				if not Settings[info.Flag] then
-					--table.insert(Settings, info.Flag)
-					Settings[info.Flag] = {
-						enabled = false
-					}
-				end
-
-				local toggleSettings = {
-					enabled = Settings[info.Flag] and Settings[info.Flag].enabled or false
-				}
-
-				info.Enabled = toggleSettings.enabled or info.Enabled or false;
-
-				local slide = Instance.new("Frame")
-				local UICorner_2 = Instance.new("UICorner")
-				local circle = Instance.new("Frame")
-				local UICorner_3 = Instance.new("UICorner")
-				local hitbox = Instance.new("TextButton")
-				local Toggle = Instance.new("Frame")
-				local ToggleName = Instance.new("TextLabel")
-				local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-
-				Toggle.Name = "Toggle"
-				Toggle.Parent = Dropdown
-				Toggle.Active = true
-				Toggle.AnchorPoint = Vector2.new(0.5, 0.5)
-				Toggle.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
-				Toggle.BackgroundTransparency = 1.000
-				Toggle.BorderSizePixel = 0
-				Toggle.Position = UDim2.new(0.5, 0, 0.25, 0)
-				Toggle.Selectable = true
-				Toggle.Size = UDim2.new(0, 217, 0, 26)
-
-				slide.Name = "slide"
-				slide.Parent = Toggle
-				slide.AnchorPoint = Vector2.new(0.5, 0.5)
-				slide.BackgroundColor3 = Color3.fromRGB(5, 5, 9)
-				slide.BorderSizePixel = 0
-				slide.Position = UDim2.new(0.871520698, 0, 0.538719773, 0)
-				slide.Size = UDim2.new(0, 37, 0, 12)
-
-				UICorner_2.Parent = slide
-
-				circle.Name = "circle"
-				circle.Parent = slide
-				circle.AnchorPoint = Vector2.new(0.5, 0.5)
-				circle.BackgroundColor3 = Color3.fromRGB(25, 31, 90)
-				circle.BorderSizePixel = 0
-				circle.Position = UDim2.new(0.189999998, 0, 0.469999999, 0)
-				circle.Size = UDim2.new(0, 15, 0, 15)
-
-				UICorner_3.CornerRadius = UDim.new(1, 0)
-				UICorner_3.Parent = circle
-
-				hitbox.Name = "hitbox"
-				hitbox.Parent = slide
-				hitbox.Active = false
-				hitbox.AnchorPoint = Vector2.new(0.5, 0.5)
-				hitbox.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-				hitbox.BackgroundTransparency = 1.000
-				hitbox.BorderSizePixel = 0
-				hitbox.Position = UDim2.new(0.5, 0, 0.5, 0)
-				hitbox.Selectable = false
-				hitbox.Size = UDim2.new(0, 42, 0, 15)
-				hitbox.Text = ""
-
-				ToggleName.Name = info.Name
-				ToggleName.Parent = Toggle
-				ToggleName.AnchorPoint = Vector2.new(0.5, 0.5)
-				ToggleName.BackgroundColor3 = Color3.fromRGB(177, 177, 177)
-				ToggleName.BackgroundTransparency = 1.000
-				ToggleName.Position = UDim2.new(0.350230426, 0, 0.500768781, 0)
-				ToggleName.Size = UDim2.new(0, 134, 0, 17)
-				ToggleName.ZIndex = 2
-				ToggleName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-				ToggleName.Text = info.Name
-				ToggleName.TextColor3 = Color3.fromRGB(177, 177, 177)
-				ToggleName.TextScaled = true
-				ToggleName.TextSize = 14.000
-				ToggleName.TextWrapped = true
-				ToggleName.TextXAlignment = Enum.TextXAlignment.Left
-
-				UITextSizeConstraint.Parent = ToggleName
-				UITextSizeConstraint.MaxTextSize = 14
-
-				callback(info.Enabled)
-
-				if info.Enabled then
-					ts:Create(ToggleName, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play();
-					ts:Create(circle, TweenInfo.new(0.5), {
-						Position = UDim2.new(0.8, 0, 0.47, 0),
-						BackgroundColor3 = Color3.fromRGB(60, 76, 216)
-					}):Play();
-					ts:Create(slide, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(45, 45, 81)}):Play();
-				end
-
-				hitbox.MouseButton1Click:Connect(function()
-					info.Enabled = not info.Enabled;
-					Settings[info.Flag].enabled = info.Enabled
-					callback(info.Enabled);
-
-					if info.Enabled then
-						ts:Create(ToggleName, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play();
-						ts:Create(circle, TweenInfo.new(0.5), {
-							Position = UDim2.new(0.8, 0, 0.47, 0),
-							BackgroundColor3 = Color3.fromRGB(60, 76, 216)
-						}):Play();
-						ts:Create(slide, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(45, 45, 81)}):Play();
-					else
-						ts:Create(ToggleName, TweenInfo.new(0.5), {TextColor3 = Color3.fromRGB(177, 177, 177)}):Play();
-						ts:Create(circle, TweenInfo.new(0.5), {
-							Position = UDim2.new(0.19, 0, 0.47, 0),
-							BackgroundColor3 = Color3.fromRGB(25, 31, 90)
-						}):Play();
-						ts:Create(slide, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(5, 5, 9)}):Play();
-					end
-				end)
-			end
-
-			function items:CreateSlider(info, callback)
-				dropdownYsize += 29;
-
-				info.Name = info.Name or "slider";
-				info.Min = info.Min or 1;
-				info.Max = info.Max or 10;
-				info.RecommendedValue = info.RecommendedValue or info.Value;
-				info.Flag = info.Flag or tostring(info.Name .. "Flag")
-				callback = callback or function() end;
-
-				if not Settings[info.Flag] then
-					Settings[info.Flag] = {
-						ammout = false
-					}
-				end
-
-				local sliderSettings = {
-					ammout = Settings[info.Flag] and Settings[info.Flag].ammout or false
-				}
-
-				info.Value = sliderSettings.ammout or info.Value or (info.Max / 2);
-
-				callback(info.Value)
-
-				local Slider = Instance.new("Frame")
-				local SliderName = Instance.new("TextLabel")
-				local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-				local slide = Instance.new("Frame")
-				local UICorner = Instance.new("UICorner")
-				local choosed = Instance.new("Frame")
-				local UICorner_2 = Instance.new("UICorner")
-				local hitbox = Instance.new("TextButton")
-				local circle = Instance.new("Frame")
-				local UICorner_3 = Instance.new("UICorner")
-				local ammout = Instance.new("Frame")
-				local UICorner_4 = Instance.new("UICorner")
-				local text = Instance.new("TextLabel")
-				local UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint")
-
-				Slider.Name = "Slider"
-				Slider.Parent = Dropdown
-				Slider.Active = true
-				Slider.AnchorPoint = Vector2.new(0.5, 0.5)
-				Slider.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
-				Slider.BackgroundTransparency = 1.000
-				Slider.BorderSizePixel = 0
-				Slider.Position = UDim2.new(0.5, 0, 0.721428573, 0)
-				Slider.Selectable = true
-				Slider.Size = UDim2.new(0, 217, 0, 29)
-
-				SliderName.Name = info.Name
-				SliderName.Parent = Slider
-				SliderName.AnchorPoint = Vector2.new(0.5, 0.5)
-				SliderName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				SliderName.BackgroundTransparency = 1.000
-				SliderName.Position = UDim2.new(0.349999994, 0, 0.400000006, 0)
-				SliderName.Size = UDim2.new(0, 134, 0, 17)
-				SliderName.ZIndex = 2
-				SliderName.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.SemiBold)
-				SliderName.Text = info.Name
-				SliderName.TextColor3 = Color3.fromRGB(177, 177, 177)
-				SliderName.TextScaled = true
-				SliderName.TextSize = 14.000
-				SliderName.TextWrapped = true
-				SliderName.TextXAlignment = Enum.TextXAlignment.Left
-
-				UITextSizeConstraint.Parent = SliderName
-				UITextSizeConstraint.MaxTextSize = 14
-
-				slide.Name = "slide"
-				slide.Parent = Slider
-				slide.AnchorPoint = Vector2.new(0.5, 0.5)
-				slide.BackgroundColor3 = Color3.fromRGB(5, 5, 9)
-				slide.BorderSizePixel = 0
-				slide.Position = UDim2.new(0.503000021, 0, 0.800000012, 0)
-				slide.Size = UDim2.new(0, 201, 0, 5)
-
-				UICorner.Parent = slide
-
-				choosed.Name = "choosed"
-				choosed.Parent = slide
-				choosed.BackgroundColor3 = Color3.fromRGB(29, 44, 247)
-				choosed.BorderSizePixel = 0
-				choosed.Position = UDim2.new(0, 0, 0, 0)
-				choosed.Size = UDim2.new(0, 103, 0, 5)
-
-				UICorner_2.CornerRadius = UDim.new(1, 0)
-				UICorner_2.Parent = choosed
-
-				hitbox.Name = "hitbox"
-				hitbox.Parent = slide
-				hitbox.Active = false
-				hitbox.AnchorPoint = Vector2.new(0.5, 0.5)
-				hitbox.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-				hitbox.BackgroundTransparency = 1.000
-				hitbox.BorderSizePixel = 0
-				hitbox.Position = UDim2.new(0.5, 0, 0.583333313, 0)
-				hitbox.Selectable = false
-				hitbox.Size = UDim2.new(0, 201, 0, 6)
-				hitbox.Text = ""
-
-				circle.Name = "circle"
-				circle.Parent = slide
-				circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				circle.BorderSizePixel = 0
-				circle.Position = UDim2.new(0.48, 0, -0.5, 0)
-				circle.Size = UDim2.new(0, 10, 0, 10)
-
-				UICorner_3.CornerRadius = UDim.new(1, 0)
-				UICorner_3.Parent = circle
-
-				ammout.Name = "ammout"
-				ammout.Parent = slide
-				ammout.AnchorPoint = Vector2.new(0.5, 0.5)
-				ammout.BackgroundColor3 = Color3.fromRGB(29, 44, 247)
-				ammout.BorderSizePixel = 0
-				ammout.Position = UDim2.new(0.925373137, 0, -2.29999995, 0)
-				ammout.Size = UDim2.new(0, 25, 0, 17)
-
-				UICorner_4.CornerRadius = UDim.new(0, 4)
-				UICorner_4.Parent = ammout
-
-				text.Name = "text"
-				text.Parent = ammout
-				text.AnchorPoint = Vector2.new(0.5, 0.5)
-				text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				text.BackgroundTransparency = 1.000
-				text.Position = UDim2.new(0.5, 0, 0.5, 0)
-				text.Size = UDim2.new(0, 25, 0, 15)
-				text.ZIndex = 2
-				text.FontFace = Font.new("rbxassetid://11702779517", Enum.FontWeight.Bold)
-				text.Text = info.Value
-				text.TextColor3 = Color3.fromRGB(255, 255, 255)
-				text.TextScaled = true
-				text.TextSize = 14.000
-				text.TextWrapped = true
-
-				UITextSizeConstraint_2.Parent = text
-				UITextSizeConstraint_2.MaxTextSize = 14
-
-				local conStart
-				local conEnded
-
-				hitbox.MouseButton1Down:Connect(function()
-					local mousePos = uis:GetMouseLocation().X;
-					local sliderSize = hitbox.AbsoluteSize.X;
-					local sliderPos = hitbox.AbsolutePosition.X;
-					local per = math.clamp((mousePos - sliderPos), 0, 201);
-					choosed.Size = UDim2.new(0, per, 0, 5);
-
-					local v = (mousePos - sliderPos) / sliderSize
-					local p = (v / 0.01 + 0.5) * 0.01
-					local circlePos = math.clamp(p, 0, 1);
-					circle.Position = UDim2.new(circlePos - 0.03, 0, -0.5, 0);
-
-					local return_value = (((info.Max - info.Min) / 201) * choosed.AbsoluteSize.X) + info.Min;
-					local a = math.floor(return_value);
-					local c = string.len(a) + 2;
-
-					if info.RecommendedValue > tonumber(string.sub(return_value, 1, c)) then
-						ts:Create(ammout, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(29, 44, 247)}):Play();
-					else
-						ts:Create(ammout, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(220, 56, 56)}):Play();
-					end
-
-					callback(string.sub(return_value, 1, c));
-					Settings[info.Flag].ammout = tostring(string.sub(return_value, 1, c))
-					text.Text = tostring(string.sub(return_value, 1, c));
-
-					conStart = mouse.Move:Connect(function()
-						local mousePos = uis:GetMouseLocation().X;
-						local sliderSize = hitbox.AbsoluteSize.X;
-						local sliderPos = hitbox.AbsolutePosition.X;
-						local per = math.clamp((mousePos - sliderPos), 0, 201);
-						choosed.Size = UDim2.new(0, per, 0, 5);
-
-						return_value = (((info.Max - info.Min) / 201) * choosed.AbsoluteSize.X) + info.Min;
-						a = math.floor(return_value);
-						c = string.len(a) + 2;
-
-						v = (mousePos - sliderPos) / sliderSize
-						p = (v / 0.01 + 0.5) * 0.01
-						circlePos = math.clamp(p, 0, 1);
-						circle.Position = UDim2.new(circlePos - 0.03, 0, -0.5, 0);
-
-						callback(string.sub(return_value, 1, c));
-						Settings[info.Flag].ammout = tostring(string.sub(return_value, 1, c))
-						text.Text = tostring(string.sub(return_value, 1, c));
-
-						if info.RecommendedValue > tonumber(string.sub(return_value, 1, c)) then
-							ts:Create(ammout, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(29, 44, 247)}):Play();
-						else
-							ts:Create(ammout, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(220, 56, 56)}):Play();
-						end
-					end)
-					conEnded = uis.InputEnded:Connect(function(Mouse)
-						if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
-							conStart:Disconnect();
-							conEnded:Disconnect();
-						end
-					end)
-				end)
-			end
-
-			return items;
-		end
-
-		return custom;
-	end
-
-	return mainUtil;
 end
-
-
---[[local main = library:Init({
-	watermark = false,
-	acIndicator = false	
-});
-local tab = main:CreateTab({Name = "Combat"});
-
-local killaura = tab:CreateButton({Name = "Killaura", Enabled = false, Flag = "KillauraFlag"}, function(callback)
-	print(callback);
-	main:Notification({Name = "Killaura", Status = callback, Seconds = 4});
-end);
-
-killaura:CreateToggle({Name = "Rotations", Enabled = false, Flag = "KillauraRotationsFlag"}, function(callback)
-	print(callback);
-end);
-killaura:CreateSlider({Name = "Attack range", Min = 7, Max = 25, Value = 14, RecommendedValue = 14, Flag = "KillauraAttackRange"}, function(callback)
-	print(callback);
-end);
-
-local char = lp.Character or lp.CharacterAdded:Wait();
-local hum = char:WaitForChild("Humanoid");
-
-spawn(function()
-	while task.wait() do
-		main:TargetHud({Player = lp, MaxHealth = hum.MaxHealth, Health = hum.Health})
+local function ParryAttempt(args)
+	remotesStorage:WaitForChild("ParryAttempt"):FireServer(unpack(args));
+end
+local function alive(plr)
+	if (plr and (plr.Character ~= nil) and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Humanoid") and (plr.Character:FindFirstChild("Humanoid").Health > 0)) then
+		return true;
 	end
-end)
-spawn(function()
-	while task.wait() do
-		for i = 1, 10 do
-			main:AnticheatState({moving = true, high = 1})
-			task.wait(0.1)
+end
+local function getPing()
+	return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue();
+end
+local function say(text)
+	rep:WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest"):FireServer(text, "All");
+end
+local function openCase(caseName)
+	local FlatIdent_76979 = 0;
+	while true do
+		if (FlatIdent_76979 == 1) then
+			remotesStorage:WaitForChild("Store"):WaitForChild("GetOwnedAbilities"):InvokeServer();
+			remotesStorage:WaitForChild("Store"):WaitForChild("GetOwnedSwordSkins"):InvokeServer();
+			break;
 		end
-		for i = 1, 10 do
-			main:AnticheatState({moving = false, high = 1})
-			task.wait(0.1)
+		if (FlatIdent_76979 == 0) then
+			if (caseName == "Swords") then
+				remotesStorage:WaitForChild("Store"):WaitForChild("RequestOpenSwordBox"):InvokeServer();
+			elseif (caseName == "Explosions") then
+				remotesStorage:WaitForChild("Store"):WaitForChild("RequestOpenExplosionBox"):InvokeServer();
+			end
+			remotesStorage:WaitForChild("Store"):WaitForChild("GetOwnedExplosionFXes"):InvokeServer();
+			FlatIdent_76979 = 1;
 		end
 	end
-end)]]
-
-return library;
---4535
+end
+function checkForInvisiblity(player)
+	local FlatIdent_24A02 = 0;
+	local char;
+	local torso;
+	local hlInChar;
+	while true do
+		if (FlatIdent_24A02 == 1) then
+			hlInChar = char:FindFirstChildOfClass("Highlight");
+			return torso and (torso.Transparency == 1) and hlInChar;
+		end
+		if (FlatIdent_24A02 == 0) then
+			char = player.Character;
+			torso = char:FindFirstChild("Torso");
+			FlatIdent_24A02 = 1;
+		end
+	end
+end
+local function getPlayers()
+	return players:GetPlayers();
+end
+local killSays = {Classic={},Toxic={},Rough={"This ball was flying so fast that when it hit you, your head was broken in half and your eyes fell out.","Even my horse, which was torn to pieces when colliding with reinforcement at high speed, was not as sad as your diaphragm, which was scattered all over the map","It's so nice to hear the crunch of bones","Let me throw a ball at you at least 500 times, but I won’t stop and will do it until you stop functioning and your blood no longer flows to the brain"},Troll={}};
+local thingsEnabled = {};
+local DesyncPart = Instance.new("Part");
+DesyncPart.Name = "offsetTrack";
+DesyncPart.CanCollide = false;
+DesyncPart.Size = Vector3.new(2, 2, 1);
+DesyncPart.Parent = workspace;
+DesyncPart.Transparency = 0;
+DesyncPart.Anchored = true;
+DesyncPart.Material = Enum.Material.ForceField;
+DesyncPart.Color = Color3.new(0, 0, 1);
+DesyncPart.CastShadow = false;
+local visualPart = Instance.new("Part", workspace);
+visualPart.Name = "VisualRange";
+visualPart.Anchored = true;
+visualPart.Position = Vector3.new(0, 1000, 0);
+visualPart.Size = Vector3.new(1, 1, 1);
+visualPart.Material = Enum.Material.SmoothPlastic;
+visualPart.Transparency = 0.5;
+visualPart.Color = Color3.new(0, 0, 1);
+visualPart.CanCollide = false;
+visualPart.Shape = Enum.PartType.Ball;
+visualPart.CastShadow = false;
+local hitParticleEmit = 5;
+local hitParticle_Star = {particle=game:GetObjects("rbxassetid://14760973807")[1],att=Instance.new("Attachment"),particles={Star="http://www.roblox.com/asset/?id=14752022090",Heart="http://www.roblox.com/asset/?id=14760963240"}};
+hitParticle_Star.att.Parent = workspace.Terrain;
+hitParticle_Star.particle.Parent = hitParticle_Star.att;
+local ballTrail = {part=Instance.new("Part", workspace),trail=game:GetObjects("rbxassetid://14752577455")[1],att0=Instance.new("Attachment"),att1=Instance.new("Attachment")};
+ballTrail.part.Name = "TrailAttach";
+ballTrail.part.Size = Vector3.new(3, 3, 3);
+ballTrail.part.Position = Vector3.new(0, 10000, 0);
+ballTrail.part.Anchored = true;
+ballTrail.part.CanCollide = false;
+ballTrail.part.Transparency = 1;
+ballTrail.part.CastShadow = false;
+ballTrail.att0.Parent = ballTrail.part;
+ballTrail.att0.Position = Vector3.new(0, 2, 0);
+ballTrail.att1.Parent = ballTrail.part;
+ballTrail.att1.Position = Vector3.new(0, -2, 0);
+ballTrail.trail.Parent = ballTrail.part;
+ballTrail.trail.Attachment0 = ballTrail.att0;
+ballTrail.trail.Attachment1 = ballTrail.att1;
+local targetEspParticle = {particle=game:GetObjects("rbxassetid://14752415197")[1],att=Instance.new("Attachment")};
+targetEspParticle.att.Parent = workspace.Terrain;
+targetEspParticle.particle.Parent = targetEspParticle.att;
+targetEspParticle.particle.Enabled = false;
+local SelfTrail = {part=Instance.new("Part", workspace),trail=game:GetObjects("rbxassetid://14752421767")[1],att0=Instance.new("Attachment"),att1=Instance.new("Attachment")};
+SelfTrail.part.Name = "SelfTrailAttach";
+SelfTrail.part.Size = Vector3.new(2, 2, 1);
+SelfTrail.part.Position = Vector3.new(0, 10000, 0);
+SelfTrail.part.Anchored = true;
+SelfTrail.part.CanCollide = false;
+SelfTrail.part.Transparency = 1;
+SelfTrail.part.CastShadow = false;
+SelfTrail.att0.Parent = SelfTrail.part;
+SelfTrail.att0.Position = Vector3.new(0, 2, 0);
+SelfTrail.att1.Parent = SelfTrail.part;
+SelfTrail.att1.Position = Vector3.new(0, -3, 0);
+SelfTrail.trail.Parent = SelfTrail.part;
+SelfTrail.trail.Attachment0 = SelfTrail.att0;
+SelfTrail.trail.Attachment1 = SelfTrail.att1;
+local JumpCircle = {particle=game:GetObjects("rbxassetid://14752597799")[1],att=Instance.new("Attachment")};
+JumpCircle.att.Parent = workspace.Terrain;
+JumpCircle.particle.Parent = JumpCircle.att;
+getgenv()._HitSound = game:GetObjects("rbxassetid://14788717719")[1];
+getgenv()._HitSound.Parent = workspace;
+getgenv().AmbientVFX = game:GetObjects("rbxassetid://14789556807")[1];
+getgenv().AmbientVFX.Parent = workspace;
+local ColorTheme = {Color3.fromRGB(202, 160, 255),Color3.fromRGB(202, 160, 255)};
+local oldColorTheme = ColorTheme;
+DesyncPart.Color = ColorTheme[1];
+visualPart.Color = ColorTheme[1];
+hitParticle_Star.particle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+ballTrail.trail.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+targetEspParticle.particle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+SelfTrail.trail.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+JumpCircle.particle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+getgenv().AmbientVFX.ParticleEmitter.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+local CheckForNewTheme = coroutine.create(function()
+	while task.wait(0.3) do
+		if (oldColorTheme ~= ColorTheme) then
+			local FlatIdent_89ECE = 0;
+			while true do
+				if (FlatIdent_89ECE == 1) then
+					visualPart.Color = ColorTheme[1];
+					hitParticle_Star.particle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+					FlatIdent_89ECE = 2;
+				end
+				if (FlatIdent_89ECE == 0) then
+					oldColorTheme = ColorTheme;
+					DesyncPart.Color = ColorTheme[1];
+					FlatIdent_89ECE = 1;
+				end
+				if (FlatIdent_89ECE == 4) then
+					getgenv().AmbientVFX.ParticleEmitter.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+					break;
+				end
+				if (FlatIdent_89ECE == 2) then
+					ballTrail.trail.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+					targetEspParticle.particle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+					FlatIdent_89ECE = 3;
+				end
+				if (FlatIdent_89ECE == 3) then
+					SelfTrail.trail.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+					JumpCircle.particle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, ColorTheme[1]),ColorSequenceKeypoint.new(1, ColorTheme[2])});
+					FlatIdent_89ECE = 4;
+				end
+			end
+		end
+	end
+end);
+coroutine.resume(CheckForNewTheme);
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/arceusopx/wopw/main/lib"))();
+local main = library.Init();
+local combatTab = main.CreateTab({Name="Combat"});
+local combatCategory_main = combatTab.CreateCategory({Name="main"});
+task.spawn(function()
+	getgenv().parryTarget = "Closest";
+	getgenv().canParry = false;
+	getgenv().ballChangedTarget = nil;
+	local aiEyePart = Instance.new("Part", workspace);
+	aiEyePart.Name = "AIEyePart";
+	aiEyePart.Anchored = true;
+	aiEyePart.CanCollide = false;
+	aiEyePart.CastShadow = false;
+	aiEyePart.Shape = Enum.PartType.Ball;
+	aiEyePart.Size = Vector3.new(3, 3, 3);
+	aiEyePart.Position = Vector3.zero;
+	aiEyePart.Transparency = 1;
+	local AutoBlockEnabled = false;
+	local lastTarget = nil;
+	local AI_lastRotated = tick();
+	local lastHit = tick();
+	local hLoop;
+	combatCategory_main.CreateLabel({Name="AutoParry",side="left"});
+	combatCategory_main.CreateToggle({Name="Enabled",enabled=getgenv().AutoParryEnabled,callback=function(state)
+		AutoBlockEnabled = state;
+		local func = coroutine.create(function()
+			if state then
+				if (hLoop == nil) then
+					hLoop = rs.Heartbeat:Connect(function()
+						if alive(lp) then
+							local FlatIdent_31A5A = 0;
+							local ball;
+							while true do
+								if (FlatIdent_31A5A == 0) then
+									ball = findBall();
+									if ball then
+										local FlatIdent_5ED46 = 0;
+										local ballTarget;
+										local dis;
+										local speed;
+										local move;
+										local ping;
+										local CalculatedSpeed;
+										local ElementaryHitbox;
+										local minDis;
+										local playersId;
+										local targetDis;
+										local PlayersToSort;
+										local targetInPlr;
+										local lastedCd;
+										local looking;
+										local lookDirection;
+										local dot;
+										local angle;
+										local BonusCooldown;
+										local ClassicCooldown;
+										local SharedSpeed;
+										local SharedDistance;
+										local hitCd;
+										while true do
+											if (FlatIdent_5ED46 == 8) then
+												SharedSpeed = math.clamp(speed / 550, 0, 0.3);
+												SharedDistance = 0.4 / math.clamp(targetDis / 40, 0, 100);
+												hitCd = ((ClassicCooldown - SharedSpeed) - SharedDistance) + BonusCooldown;
+												hit = math.clamp(hitCd, 0, 1);
+												FlatIdent_5ED46 = 9;
+											end
+											if (1 == FlatIdent_5ED46) then
+												dis = (ball.Position - lp.Character.HumanoidRootPart.Position).Magnitude;
+												speed = ball.Velocity.Magnitude;
+												move = lp.Character.Humanoid.MoveDirection;
+												ping = getPing();
+												FlatIdent_5ED46 = 2;
+											end
+											if (FlatIdent_5ED46 == 0) then
+												if (getgenv().TargetBallEnabled and (getgenv().TargetBallSpeed ~= nil) and (getgenv().TargetBallDistance ~= nil)) then
+													local FlatIdent_8CEDF = 0;
+													local sin;
+													local cos;
+													local mathPos;
+													local lookEye;
+													while true do
+														if (FlatIdent_8CEDF == 1) then
+															mathPos = Vector3.new(ball.Position.X + sin, ball.Position.Y, ball.Position.z + cos);
+															lookEye = Vector3.new(ball.Position.X, lp.Character.HumanoidRootPart.Position.Y, ball.Position.Z);
+															FlatIdent_8CEDF = 2;
+														end
+														if (FlatIdent_8CEDF == 2) then
+															lp.Character.HumanoidRootPart.CFrame = CFrame.new(mathPos, lookEye);
+															break;
+														end
+														if (FlatIdent_8CEDF == 0) then
+															sin = math.sin(tick() * getgenv().TargetBallSpeed) * getgenv().TargetBallDistance;
+															cos = math.cos(tick() * getgenv().TargetBallSpeed) * getgenv().TargetBallDistance;
+															FlatIdent_8CEDF = 1;
+														end
+													end
+												end
+												if ((0.1 > ball.Velocity.Magnitude) or ball.Anchored) then
+													return;
+												end
+												ballTarget = ball:GetAttributes().target;
+												if thingsEnabled.BallTrailEnabled then
+													ballTrail.part.CFrame = ball.CFrame;
+												end
+												FlatIdent_5ED46 = 1;
+											end
+											if (FlatIdent_5ED46 == 5) then
+												targetInPlr = players:FindFirstChild(lastTarget);
+												if (thingsEnabled.TargetEspEnabled and (lastTarget ~= nil) and players:FindFirstChild(lastTarget) and alive(players[lastTarget])) then
+													local FlatIdent_8BF78 = 0;
+													local hrp_1;
+													while true do
+														if (FlatIdent_8BF78 == 0) then
+															hrp_1 = players[lastTarget].Character.HumanoidRootPart;
+															targetEspParticle.att.WorldPosition = hrp_1.Position;
+															FlatIdent_8BF78 = 1;
+														end
+														if (1 == FlatIdent_8BF78) then
+															targetEspParticle.particle.Enabled = true;
+															break;
+														end
+													end
+												else
+													targetEspParticle.particle.Enabled = false;
+												end
+												if thingsEnabled.Ai then
+													local FlatIdent_27404 = 0;
+													local TargetCF;
+													while true do
+														if (FlatIdent_27404 == 1) then
+															if ((lastTarget ~= nil) and workspace.Alive:FindFirstChild(lp.Name)) then
+																local FlatIdent_2A862 = 0;
+																while true do
+																	if (FlatIdent_2A862 == 0) then
+																		if (math.random(500) == 500) then
+																			if (lp.Character.Humanoid.FloorMaterial ~= Enum.Material.Air) then
+																				lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping);
+																			end
+																		end
+																		if (ballTarget ~= lp.Name) then
+																			if (targetInPlr and alive(targetInPlr)) then
+																				ts:Create(aiEyePart, TweenInfo.new(1.5), {CFrame=targetInPlr.Character.HumanoidRootPart.CFrame}):Play();
+																				local startEye = lp.Character.HumanoidRootPart.Position;
+																				local lookEye = Vector3.new(aiEyePart.Position.X, startEye.Y, aiEyePart.Position.Z);
+																				lp.Character.Humanoid:MoveTo(aiEyePart.Position + (aiEyePart.CFrame.LookVector * (math.clamp(200 - (speed * 2.5), 1, 200))));
+																				lp.Character.HumanoidRootPart.CFrame = CFrame.new(lp.Character.HumanoidRootPart.Position, lookEye);
+																				AI_lastRotated = tick();
+																			end
+																		else
+																			local FlatIdent_75B50 = 0;
+																			local startEye;
+																			local lookEye;
+																			while true do
+																				if (FlatIdent_75B50 == 1) then
+																					lookEye = Vector3.new(aiEyePart.Position.X, startEye.Y, aiEyePart.Position.Z);
+																					lp.Character.HumanoidRootPart.CFrame = CFrame.new(lp.Character.HumanoidRootPart.Position, lookEye);
+																					FlatIdent_75B50 = 2;
+																				end
+																				if (FlatIdent_75B50 == 2) then
+																					lp.Character.Humanoid:MoveTo(lp.Character.HumanoidRootPart.Position);
+																					break;
+																				end
+																				if (FlatIdent_75B50 == 0) then
+																					if ((tick() - AI_lastRotated) <= 0.2) then
+																						ts:Create(aiEyePart, TweenInfo.new(0.5), {CFrame=(lp.Character.HumanoidRootPart.CFrame + Vector3.new(math.random(-50, 50), 0, math.random(-50, 50)))}):Play();
+																					end
+																					startEye = lp.Character.HumanoidRootPart.Position;
+																					FlatIdent_75B50 = 1;
+																				end
+																			end
+																		end
+																		break;
+																	end
+																end
+															else
+																lp.Character.Humanoid:MoveTo(lp.Character.HumanoidRootPart.Position);
+															end
+															break;
+														end
+														if (FlatIdent_27404 == 0) then
+															if getgenv().TargetBallEnabled then
+																return;
+															end
+															TargetCF = nil;
+															FlatIdent_27404 = 1;
+														end
+													end
+												end
+												for _, v in pairs(players:GetPlayers()) do
+													if (alive(v) and (v ~= lp) and workspace.Alive:FindFirstChild(v.Name)) then
+														local FlatIdent_61EE = 0;
+														local plrDis;
+														while true do
+															if (0 == FlatIdent_61EE) then
+																plrDis = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude;
+																if (v.Name == lastTarget) then
+																	targetDis = plrDis;
+																end
+																break;
+															end
+														end
+													end
+												end
+												FlatIdent_5ED46 = 6;
+											end
+											if (FlatIdent_5ED46 == 9) then
+												if ((dis <= minDis) and (ballTarget == lp.Name) and (lastedCd >= hitCd)) then
+													local FlatIdent_89237 = 0;
+													local args;
+													while true do
+														if (FlatIdent_89237 == 2) then
+															textl.Text = hitCd;
+															args = {[1]=1.5,[2]=lp.Character.HumanoidRootPart.CFrame,[3]=playersId,[4]={[1]=ball.Name,[2]=ball.Name}};
+															FlatIdent_89237 = 3;
+														end
+														if (FlatIdent_89237 == 3) then
+															ParryAttempt(args);
+															if thingsEnabled.HitSoundEnabled then
+																getgenv()._HitSound:Play();
+															end
+															FlatIdent_89237 = 4;
+														end
+														if (FlatIdent_89237 == 4) then
+															if thingsEnabled.HitParticleEnabled then
+																local FlatIdent_3CF36 = 0;
+																while true do
+																	if (0 == FlatIdent_3CF36) then
+																		hitParticle_Star.att.Position = ball.Position;
+																		hitParticle_Star.particle:Emit(hitParticleEmit);
+																		break;
+																	end
+																end
+															end
+															lastHit = tick();
+															break;
+														end
+														if (FlatIdent_89237 == 0) then
+															print("SharedSpeed:", SharedSpeed);
+															print("SharedDistance:", SharedDistance);
+															FlatIdent_89237 = 1;
+														end
+														if (FlatIdent_89237 == 1) then
+															print("BonusCooldown:", BonusCooldown);
+															print("hitCd:", hitCd);
+															FlatIdent_89237 = 2;
+														end
+													end
+												end
+												break;
+											end
+											if (FlatIdent_5ED46 == 4) then
+												for _, v in pairs(players:GetPlayers()) do
+													if ((v ~= lp) and alive(v) and workspace.Alive:FindFirstChild(v.Name)) then
+														table.insert(PlayersToSort, v);
+													end
+												end
+												if (ballTarget == lp.Name) then
+													if thingsEnabled.AutoGhostEnabled then
+														local FlatIdent_E0D0 = 0;
+														while true do
+															if (FlatIdent_E0D0 == 0) then
+																remotesStorage:WaitForChild("PlrInvisibilityd"):FireServer();
+																remotesStorage:WaitForChild("Telekinesis"):FireServer({[1]=lp.Character.HumanoidRootPart.CFrame,[2]=PlayersToSort,[3]={[1]=ball.Name,[2]=ball.Name}});
+																break;
+															end
+														end
+													end
+												end
+												if (getgenv().parryTarget == "Closest") then
+													local FlatIdent_8DCA9 = 0;
+													while true do
+														if (FlatIdent_8DCA9 == 0) then
+															table.sort(PlayersToSort, function(plr1, plr2)
+																local dis1 = (plr1.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude;
+																local dis2 = (plr2.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude;
+																return dis1 < dis2;
+															end);
+															playersId[PlayersToSort[1].UserId] = PlayersToSort[1].Character.HumanoidRootPart.Position;
+															break;
+														end
+													end
+												elseif (getgenv().parryTarget == "Random") then
+													local FlatIdent_39EBF = 0;
+													local randomTarget;
+													while true do
+														if (FlatIdent_39EBF == 0) then
+															randomTarget = PlayersToSort[math.random(1, #PlayersToSort)];
+															playersId[randomTarget.UserId] = randomTarget.Character.HumanoidRootPart.Position;
+															break;
+														end
+													end
+												end
+												lastTarget = ((ballTarget ~= lp.Name) and ballTarget) or PlayersToSort[1].Name;
+												FlatIdent_5ED46 = 5;
+											end
+											if (FlatIdent_5ED46 == 6) then
+												lastedCd = tick() - lastHit;
+												looking = lp.Character.HumanoidRootPart.CFrame.LookVector;
+												lookDirection = (lp.Character.HumanoidRootPart.Position - targetInPlr.Character.HumanoidRootPart.Position).Unit;
+												dot = looking:Dot(lookDirection);
+												FlatIdent_5ED46 = 7;
+											end
+											if (FlatIdent_5ED46 == 3) then
+												visualPart.Size = Vector3.new(minDis, minDis, minDis);
+												playersId = {};
+												targetDis = 0;
+												PlayersToSort = {};
+												FlatIdent_5ED46 = 4;
+											end
+											if (FlatIdent_5ED46 == 2) then
+												CalculatedSpeed = math.clamp((speed / 4) + (ping / 50), 0, 8999999488);
+												ElementaryHitbox = 3 + (ping / 40);
+												minDis = ElementaryHitbox + CalculatedSpeed;
+												visualPart.CFrame = lp.Character.HumanoidRootPart.CFrame;
+												FlatIdent_5ED46 = 3;
+											end
+											if (7 == FlatIdent_5ED46) then
+												angle = math.acos(dot);
+												angle = math.deg(angle);
+												BonusCooldown = math.clamp((1 / angle) / (speed / 50), 0, 0.1);
+												ClassicCooldown = 1;
+												FlatIdent_5ED46 = 8;
+											end
+										end
+									end
+									break;
+								end
+							end
+						end
+					end);
+				end
+			else
+				visualPart.Position = Vector3.new(0, 10000, 0);
+				if (hLoop ~= nil) then
+					local FlatIdent_4D434 = 0;
+					while true do
+						if (FlatIdent_4D434 == 0) then
+							hLoop:Disconnect();
+							hLoop = nil;
+							break;
+						end
+					end
+				end
+			end
+		end);
+		coroutine.resume(func);
+	end});
+	combatCategory_main.CreateDropdown({Name="Target",side="left",objects={"Random","Closest"},choosed="Closest",callback=function(state)
+		getgenv().parryTarget = state;
+	end});
+	combatCategory_main.CreateToggle({Name="AI",side="left",callback=function(state)
+		thingsEnabled.Ai = (state and true) or nil;
+	end});
+end);
+task.spawn(function()
+	local FlatIdent_45D37 = 0;
+	while true do
+		if (FlatIdent_45D37 == 2) then
+			combatCategory_main.CreateToggle({Name="Enabled",callback=function(state)
+				getgenv().TargetBallEnabled = state;
+			end});
+			combatCategory_main.CreateSlider({Name="Distance",min=5,max=100,value=20,callback=function(state)
+				getgenv().TargetBallDistance = state;
+			end});
+			FlatIdent_45D37 = 3;
+		end
+		if (3 == FlatIdent_45D37) then
+			combatCategory_main.CreateSlider({Name="Speed",min=1,max=15,callback=function(state)
+				getgenv().TargetBallSpeed = state;
+			end});
+			break;
+		end
+		if (FlatIdent_45D37 == 0) then
+			getgenv().TargetBallEnabled = false;
+			getgenv().TargetBallDistance = 20;
+			FlatIdent_45D37 = 1;
+		end
+		if (FlatIdent_45D37 == 1) then
+			getgenv().TargetBallSpeed = 2;
+			combatCategory_main.CreateLabel({Name="TargetBall",side="left"});
+			FlatIdent_45D37 = 2;
+		end
+	end
+end);
+local miscTab = main.CreateTab({Name="Misc"});
+local miscCategory_self = miscTab.CreateCategory({Name="self"});
+task.spawn(function()
+	local FlatIdent_581C8 = 0;
+	local SpinEnabled;
+	local y;
+	while true do
+		if (FlatIdent_581C8 == 1) then
+			miscCategory_self.CreateLabel({Name="Spin",side="left"});
+			miscCategory_self.CreateToggle({Name="Enabled",callback=function(state)
+				local FlatIdent_FA88 = 0;
+				local func;
+				while true do
+					if (FlatIdent_FA88 == 0) then
+						SpinEnabled = state;
+						func = coroutine.create(function()
+							if state then
+								repeat
+									task.wait();
+									if alive(lp) then
+										local FlatIdent_1CA5D = 0;
+										while true do
+											if (FlatIdent_1CA5D == 0) then
+												lp.Character.Humanoid.AutoRotate = false;
+												lp.Character.HumanoidRootPart.CFrame = lp.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(y), 0);
+												break;
+											end
+										end
+									end
+								until not SpinEnabled 
+								if alive(lp) then
+									lp.Character.Humanoid.AutoRotate = true;
+								end
+							elseif alive(lp) then
+								lp.Character.Humanoid.AutoRotate = true;
+							end
+						end);
+						FlatIdent_FA88 = 1;
+					end
+					if (FlatIdent_FA88 == 1) then
+						coroutine.resume(func);
+						break;
+					end
+				end
+			end});
+			FlatIdent_581C8 = 2;
+		end
+		if (FlatIdent_581C8 == 2) then
+			miscCategory_self.CreateSlider({Name="Roll",max=180,min=-180,value=5,callback=function(state)
+				y = state;
+			end});
+			break;
+		end
+		if (FlatIdent_581C8 == 0) then
+			SpinEnabled = false;
+			y = 5;
+			FlatIdent_581C8 = 1;
+		end
+	end
+end);
+task.spawn(function()
+	local ServerPositionEnabled = false;
+	local ServerPositionyLoop;
+	miscCategory_self.CreateLabel({Name="ServerPosition",side="left"});
+	miscCategory_self.CreateToggle({Name="Enabled",callback=function(state)
+		local FlatIdent_272FB = 0;
+		local func;
+		while true do
+			if (FlatIdent_272FB == 0) then
+				ServerPositionEnabled = state;
+				func = coroutine.create(function()
+					if state then
+						ServerPositionLoop = rs.Heartbeat:Connect(function()
+							if alive(lp) then
+								local FlatIdent_628E3 = 0;
+								local ping;
+								local hrp;
+								local oldCF;
+								local prevBacktrackCFrame;
+								local newCFrame;
+								while true do
+									if (FlatIdent_628E3 == 1) then
+										oldCF = hrp.CFrame;
+										prevBacktrackCFrame = DesyncPart.CFrame;
+										FlatIdent_628E3 = 2;
+									end
+									if (FlatIdent_628E3 == 2) then
+										newCFrame = hrp.CFrame;
+										task.spawn(function()
+											local FlatIdent_68856 = 0;
+											while true do
+												if (FlatIdent_68856 == 0) then
+													task.wait(ping / 1000);
+													DesyncPart.CFrame = prevBacktrackCFrame;
+													break;
+												end
+											end
+										end);
+										FlatIdent_628E3 = 3;
+									end
+									if (FlatIdent_628E3 == 0) then
+										ping = getPing();
+										hrp = lp.Character.HumanoidRootPart;
+										FlatIdent_628E3 = 1;
+									end
+									if (FlatIdent_628E3 == 3) then
+										prevBacktrackCFrame = newCFrame;
+										break;
+									end
+								end
+							end
+						end);
+					else
+						local FlatIdent_42BD8 = 0;
+						while true do
+							if (FlatIdent_42BD8 == 1) then
+								DesyncPart.Position = Vector3.new(0, 10000, 0);
+								break;
+							end
+							if (FlatIdent_42BD8 == 0) then
+								if (ServerPositionLoop ~= nil) then
+									local FlatIdent_869A9 = 0;
+									while true do
+										if (FlatIdent_869A9 == 0) then
+											ServerPositionLoop:Disconnect();
+											ServerPositionLoop = nil;
+											break;
+										end
+									end
+								end
+								task.wait((ping / 1000) + 0.2);
+								FlatIdent_42BD8 = 1;
+							end
+						end
+					end
+				end);
+				FlatIdent_272FB = 1;
+			end
+			if (1 == FlatIdent_272FB) then
+				coroutine.resume(func);
+				break;
+			end
+		end
+	end});
+end);
+task.spawn(function()
+	local EmotionEnabled = false;
+	local EmotionChoosed = "Menacing";
+	local playAnim;
+	miscCategory_self.CreateLabel({Name="AutoEmotion",side="right"});
+	miscCategory_self.CreateToggle({Name="Enabled",side="right",callback=function(state)
+		local FlatIdent_276C2 = 0;
+		local func;
+		while true do
+			if (FlatIdent_276C2 == 1) then
+				coroutine.resume(func);
+				break;
+			end
+			if (FlatIdent_276C2 == 0) then
+				EmotionEnabled = state;
+				func = coroutine.create(function()
+					local FlatIdent_7F3C8 = 0;
+					while true do
+						if (FlatIdent_7F3C8 == 0) then
+							repeat
+								task.wait();
+							until alive(lp) 
+							if state then
+								local EmotesList = {Emote1=lp.Character:WaitForChild("BaseUIS").Emote1,Emote2=lp.Character:WaitForChild("BaseUIS").Emote2,Emote3=lp.Character:WaitForChild("BaseUIS").Emote3,Emote4=lp.Character:WaitForChild("BaseUIS").Emote4,Emote5=lp.Character:WaitForChild("BaseUIS").Emote5,Emote6=lp.Character:WaitForChild("BaseUIS").Emote6,Emote7=lp.Character:WaitForChild("BaseUIS").Emote7,Menacing=lp.Character:WaitForChild("BaseUIS").Menacing};
+								while task.wait() do
+									if not EmotionEnabled then
+										break;
+									end
+									repeat
+										task.wait();
+										if not EmotionEnabled then
+											break;
+										end
+									until alive(lp) 
+									if not EmotionEnabled then
+										break;
+									end
+									if (EmotionChoosed == "Menacing") then
+										remotesStorage:WaitForChild("CustomEmote"):FireServer(true, "Empyrean");
+									else
+										remotesStorage:WaitForChild("CustomEmote"):FireServer(false, "Empyrean");
+									end
+									playAnim = lp.Character.Humanoid:LoadAnimation(EmotesList[EmotionChoosed]);
+									playAnim:Play();
+									repeat
+										task.wait();
+									until (alive(lp) ~= true) or not EmotionEnabled 
+									print("Resetting");
+								end
+							elseif (playAnim ~= nil) then
+								remotesStorage:WaitForChild("CustomEmote"):FireServer(false, "Empyrean");
+								playAnim:Stop();
+								playAnim = nil;
+							end
+							break;
+						end
+					end
+				end);
+				FlatIdent_276C2 = 1;
+			end
+		end
+	end});
+	miscCategory_self.CreateDropdown({Name="Emotion",side="right",objects={"Emote1","Emote2","Emote3","Emote4","Emote5","Emote6","Emote7","Menacing"},choosed="Menacing",callback=function(state)
+		EmotionChoosed = state;
+	end});
+end);
+task.spawn(function()
+	local FlatIdent_8E5B4 = 0;
+	local HitSoundEnabled;
+	local HitSounds;
+	local HitSoundChoosed;
+	local playAnim;
+	while true do
+		if (FlatIdent_8E5B4 == 2) then
+			miscCategory_self.CreateLabel({Name="HitSound",side="right"});
+			miscCategory_self.CreateToggle({Name="Enabled",side="right",callback=function(state)
+				thingsEnabled.HitSoundEnabled = (state and true) or nil;
+			end});
+			FlatIdent_8E5B4 = 3;
+		end
+		if (3 == FlatIdent_8E5B4) then
+			miscCategory_self.CreateDropdown({Name="Sounds",side="right",objects={"MinecraftHit","MinecraftCrit","Neverlose","Teamfortress Bonk","Teamfortress Bell"},choosed="Neverlose",callback=function(state)
+				getgenv()._HitSound.SoundId = HitSounds[state];
+			end});
+			break;
+		end
+		if (FlatIdent_8E5B4 == 0) then
+			HitSoundEnabled = false;
+			HitSounds = {MinecraftHit="rbxassetid://8766809464",MinecraftCrit="rbxassetid://8458185621",Neverlose="rbxassetid://8679627751",["Teamfortress Bonk"]="rbxassetid://8255306220",["Teamfortress Bell"]="rbxassetid://2868331684"};
+			FlatIdent_8E5B4 = 1;
+		end
+		if (FlatIdent_8E5B4 == 1) then
+			HitSoundChoosed = "Neverlose";
+			playAnim = nil;
+			FlatIdent_8E5B4 = 2;
+		end
+	end
+end);
+local miscCategory_features = miscTab.CreateCategory({Name="features"});
+task.spawn(function()
+	local FlatIdent_1468D = 0;
+	while true do
+		if (FlatIdent_1468D == 0) then
+			miscCategory_features.CreateLabel({Name="AutoAbility",side="left"});
+			miscCategory_features.CreateToggle({Name="Enabled",enabled=getgenv().botClient,callback=function(state)
+				thingsEnabled.AutoGhostEnabled = (state and true) or nil;
+			end});
+			break;
+		end
+	end
+end);
+task.spawn(function()
+	local FlatIdent_651C5 = 0;
+	local AutoBuyEnabled;
+	local AutoBuyCase;
+	while true do
+		if (2 == FlatIdent_651C5) then
+			miscCategory_features.CreateDropdown({Name="Case",objects={"Swords","Explosions"},choosed="Swords",callback=function(state)
+				AutoBuyCase = state;
+			end});
+			break;
+		end
+		if (FlatIdent_651C5 == 1) then
+			miscCategory_features.CreateLabel({Name="AutoBuy",side="left"});
+			miscCategory_features.CreateToggle({Name="Enabled",callback=function(state)
+				local FlatIdent_985A2 = 0;
+				local func;
+				while true do
+					if (FlatIdent_985A2 == 0) then
+						func = coroutine.create(function()
+							local FlatIdent_512FF = 0;
+							while true do
+								if (FlatIdent_512FF == 0) then
+									AutoBuyEnabled = state;
+									if state then
+										repeat
+											local FlatIdent_829F9 = 0;
+											while true do
+												if (FlatIdent_829F9 == 0) then
+													openCase(AutoBuyCase);
+													task.wait(0.3);
+													break;
+												end
+											end
+										until not AutoBuyEnabled 
+									end
+									break;
+								end
+							end
+						end);
+						coroutine.resume(func);
+						break;
+					end
+				end
+			end});
+			FlatIdent_651C5 = 2;
+		end
+		if (FlatIdent_651C5 == 0) then
+			AutoBuyEnabled = false;
+			AutoBuyCase = "Swords";
+			FlatIdent_651C5 = 1;
+		end
+	end
+end);
+local miscCategory_exploits = miscTab.CreateCategory({Name="exploits",side="left"});
+task.spawn(function()
+	local FlatIdent_89562 = 0;
+	local abilityChoosedToSpam;
+	local abilitySpamEnabled;
+	while true do
+		if (FlatIdent_89562 == 1) then
+			function ThunderDashSpam()
+				local checkedPlayers = {};
+				for _, v in pairs(getPlayers()) do
+					if ((v ~= lp) and alive(v)) then
+						table.insert(checkedPlayers, v);
+					end
+				end
+				if (1 > #checkedPlayers) then
+					return;
+				end
+				local randomPlayer = checkedPlayers[math.random(1, #checkedPlayers)];
+				remotesStorage:WaitForChild("ThunderDash"):FireServer(randomPlayer.Character.HumanoidRootPart.Position);
+			end
+			miscCategory_exploits.CreateLabel({Name="Spam Ability",side="left"});
+			FlatIdent_89562 = 2;
+		end
+		if (FlatIdent_89562 == 0) then
+			abilityChoosedToSpam = "ThunderDash";
+			abilitySpamEnabled = false;
+			FlatIdent_89562 = 1;
+		end
+		if (FlatIdent_89562 == 2) then
+			miscCategory_exploits.CreateToggle({Name="Enabled",side="left",callback=function(state)
+				local FlatIdent_835BC = 0;
+				local func;
+				while true do
+					if (FlatIdent_835BC == 1) then
+						coroutine.resume(func);
+						break;
+					end
+					if (0 == FlatIdent_835BC) then
+						abilitySpamEnabled = state;
+						func = coroutine.create(function()
+							if state then
+								repeat
+									local FlatIdent_67F21 = 0;
+									while true do
+										if (FlatIdent_67F21 == 0) then
+											if (abilityChoosedToSpam == "ThunderDash") then
+												local FlatIdent_8EA6E = 0;
+												while true do
+													if (FlatIdent_8EA6E == 0) then
+														ThunderDashSpam();
+														task.wait(0.3);
+														break;
+													end
+												end
+											elseif (abilityChoosedToSpam == "Telekinesis") then
+												remotesStorage:WaitForChild("Telekinesis"):FireServer();
+												task.wait(0.1);
+											end
+											rs.Heartbeat:Wait();
+											break;
+										end
+									end
+								until not abilitySpamEnabled 
+							end
+						end);
+						FlatIdent_835BC = 1;
+					end
+				end
+			end});
+			miscCategory_exploits.CreateDropdown({Name="Ability",side="left",objects={"ThunderDash","Telekinesis"},choosed="ThunderDash",callback=function(state)
+				abilityChoosedToSpam = state;
+			end});
+			break;
+		end
+	end
+end);
+local renderTab = main.CreateTab({Name="Render"});
+local renderCategory_world = renderTab.CreateCategory({Name="world"});
+task.spawn(function()
+	local clockTimeEnabled = false;
+	local choosedTime = 0;
+	local oldClockTime = lighting.ClockTime;
+	renderCategory_world.CreateLabel({Name="TimeChanger",side="left"});
+	renderCategory_world.CreateToggle({Name="Enabled",callback=function(state)
+		local FlatIdent_33DE6 = 0;
+		local func;
+		while true do
+			if (0 == FlatIdent_33DE6) then
+				clockTimeEnabled = state;
+				func = coroutine.create(function()
+					if state then
+						repeat
+							task.wait(0.5);
+							ts:Create(lighting, TweenInfo.new(1.5), {ClockTime=tonumber(choosedTime)}):Play();
+						until not clockTimeEnabled 
+					end
+				end);
+				FlatIdent_33DE6 = 1;
+			end
+			if (FlatIdent_33DE6 == 1) then
+				coroutine.resume(func);
+				break;
+			end
+		end
+	end});
+	renderCategory_world.CreateSlider({Name="Time",max=12,min=0,value=0,callback=function(state)
+		choosedTime = state;
+	end});
+end);
+task.spawn(function()
+	local AmbientEnabled = false;
+	local AmbientType = "Rain";
+	local offset = Vector3.new(0, 36, 0);
+	renderCategory_world.CreateLabel({Name="Ambient",side="left"});
+	renderCategory_world.CreateToggle({Name="Enabled",side="left",callback=function(state)
+		local FlatIdent_1512 = 0;
+		local func;
+		while true do
+			if (0 == FlatIdent_1512) then
+				func = coroutine.create(function()
+					local FlatIdent_229D1 = 0;
+					while true do
+						if (FlatIdent_229D1 == 0) then
+							AmbientEnabled = state;
+							if state then
+								local FlatIdent_71E8F = 0;
+								while true do
+									if (FlatIdent_71E8F == 0) then
+										repeat
+											local FlatIdent_51C44 = 0;
+											while true do
+												if (FlatIdent_51C44 == 0) then
+													if alive(lp) then
+														getgenv().AmbientVFX.Position = lp.Character.HumanoidRootPart.Position + offset;
+													end
+													rs.Heartbeat:Wait();
+													break;
+												end
+											end
+										until not AmbientEnabled 
+										getgenv().AmbientVFX.Position = Vector3.new(0, 10000, 0);
+										break;
+									end
+								end
+							end
+							break;
+						end
+					end
+				end);
+				coroutine.resume(func);
+				break;
+			end
+		end
+	end});
+	renderCategory_world.CreateDropdown({Name="Type",side="left",objects={"Rain"},choosed="Rain",callback=function(state)
+		AmbientType = state;
+	end});
+end);
+task.spawn(function()
+	local FlatIdent_92514 = 0;
+	while true do
+		if (FlatIdent_92514 == 0) then
+			renderCategory_world.CreateLabel({Name="HitParticle",side="right"});
+			renderCategory_world.CreateToggle({Name="Enabled",side="right",callback=function(state)
+				thingsEnabled.HitParticleEnabled = (state and true) or nil;
+			end});
+			FlatIdent_92514 = 1;
+		end
+		if (FlatIdent_92514 == 1) then
+			renderCategory_world.CreateSlider({Name="Emit",side="right",max=30,min=1,value=5,callback=function(state)
+				hitParticleEmit = state;
+			end});
+			renderCategory_world.CreateDropdown({Name="Texture",side="right",objects={"Star","Heart"},choosed="Star",callback=function(state)
+				hitParticle_Star.particle.Texture = hitParticle_Star.particles[state];
+				print(hitParticle_Star.particle.Texture);
+			end});
+			break;
+		end
+	end
+end);
+task.spawn(function()
+	local FlatIdent_9448C = 0;
+	while true do
+		if (FlatIdent_9448C == 0) then
+			renderCategory_world.CreateLabel({Name="BallTrail",side="right"});
+			renderCategory_world.CreateToggle({Name="Enabled",side="right",callback=function(state)
+				thingsEnabled.BallTrailEnabled = (state and true) or nil;
+			end});
+			FlatIdent_9448C = 1;
+		end
+		if (FlatIdent_9448C == 1) then
+			renderCategory_world.CreateSlider({Name="LifeTime",side="right",max=2.1,min=0.1,value=0.3,callback=function(state)
+				ballTrail.trail.Lifetime = state;
+			end});
+			break;
+		end
+	end
+end);
+local renderCategory_self = renderTab.CreateCategory({Name="self"});
+task.spawn(function()
+	local FlatIdent_5CA49 = 0;
+	local TrailEnabled;
+	while true do
+		if (1 == FlatIdent_5CA49) then
+			renderCategory_self.CreateToggle({Name="Enabled",callback=function(state)
+				TrailEnabled = state;
+				local func = coroutine.create(function()
+					if state then
+						repeat
+							local FlatIdent_90E07 = 0;
+							while true do
+								if (FlatIdent_90E07 == 0) then
+									if alive(lp) then
+										SelfTrail.part.CFrame = lp.Character.HumanoidRootPart.CFrame;
+									end
+									rs.Heartbeat:Wait();
+									break;
+								end
+							end
+						until not TrailEnabled 
+					end
+				end);
+				coroutine.resume(func);
+			end});
+			renderCategory_self.CreateSlider({Name="LifeTime",side="left",max=2.1,min=0.1,value=0.15,callback=function(state)
+				local FlatIdent_508D4 = 0;
+				while true do
+					if (FlatIdent_508D4 == 0) then
+						SelfTrail.trail.Lifetime = state;
+						print(SelfTrail.trail.Lifetime);
+						break;
+					end
+				end
+			end});
+			break;
+		end
+		if (FlatIdent_5CA49 == 0) then
+			TrailEnabled = false;
+			renderCategory_self.CreateLabel({Name="Trail",side="left"});
+			FlatIdent_5CA49 = 1;
+		end
+	end
+end);
+task.spawn(function()
+	local FlatIdent_8A9D7 = 0;
+	local JumpCircleEnabled;
+	while true do
+		if (FlatIdent_8A9D7 == 0) then
+			JumpCircleEnabled = false;
+			renderCategory_self.CreateLabel({Name="JumpCircle",side="left"});
+			FlatIdent_8A9D7 = 1;
+		end
+		if (FlatIdent_8A9D7 == 1) then
+			renderCategory_self.CreateToggle({Name="Enabled",callback=function(state)
+				thingsEnabled.JumpCircleEnabled = (state and true) or nil;
+			end});
+			renderCategory_self.CreateSlider({Name="LifeTime",side="left",max=3,min=0.1,value=1,callback=function(state)
+				JumpCircle.particle.Lifetime = NumberRange.new(state);
+			end});
+			break;
+		end
+	end
+end);
+local renderCategory_players = renderTab.CreateCategory({Name="players"});
+task.spawn(function()
+	local EspEnabled = false;
+	renderCategory_players.CreateLabel({Name="TargetEsp",side="left"});
+	renderCategory_players.CreateToggle({Name="Enabled",callback=function(state)
+		thingsEnabled.TargetEspEnabled = (state and true) or nil;
+	end});
+end);
+local Tab_Themes = main.CreateTab({Name="Settings"});
+local ThemesCategory_ui = Tab_Themes.CreateCategory({Name="ui"});
+task.spawn(function()
+	local FlatIdent_22A5C = 0;
+	while true do
+		if (FlatIdent_22A5C == 1) then
+			ThemesCategory_ui.CreateTheme({Name="Moon",color=Color3.fromRGB(152, 221, 211),color2=Color3.fromRGB(93, 74, 249),callback=function(state)
+				ColorTheme = state;
+			end});
+			ThemesCategory_ui.CreateTheme({Name="Blood",color=Color3.fromRGB(197, 55, 109),color2=Color3.fromRGB(85, 21, 11),callback=function(state)
+				ColorTheme = state;
+			end});
+			FlatIdent_22A5C = 2;
+		end
+		if (FlatIdent_22A5C == 2) then
+			ThemesCategory_ui.CreateTheme({Name="Toxic",color=Color3.fromRGB(111, 242, 122),color2=Color3.fromRGB(8, 72, 112),callback=function(state)
+				ColorTheme = state;
+			end});
+			ThemesCategory_ui.CreateTheme({Name="Warm",color=Color3.fromRGB(234, 135, 77),color2=Color3.fromRGB(111, 88, 199),callback=function(state)
+				ColorTheme = state;
+			end});
+			FlatIdent_22A5C = 3;
+		end
+		if (0 == FlatIdent_22A5C) then
+			ThemesCategory_ui.CreateLabel({Name="Themes",side="left"});
+			ThemesCategory_ui.CreateTheme({Name="Cosmic",color=Color3.fromRGB(3, 192, 255),color2=Color3.fromRGB(16, 31, 255),callback=function(state)
+				ColorTheme = state;
+			end});
+			FlatIdent_22A5C = 1;
+		end
+		if (FlatIdent_22A5C == 3) then
+			ThemesCategory_ui.CreateTheme({Name="Violet",color=Color3.fromRGB(190, 183, 241),color2=Color3.fromRGB(113, 68, 164),callback=function(state)
+				ColorTheme = state;
+			end});
+			break;
+		end
+	end
+end);
+task.spawn(function()
+	local FlatIdent_2C7C4 = 0;
+	local blurEnabled;
+	local blurSize;
+	local clientBlur;
+	while true do
+		if (FlatIdent_2C7C4 == 3) then
+			ThemesCategory_ui.CreateToggle({Name="Blur",enabled=true,side="right",callback=function(state)
+				local FlatIdent_23FF9 = 0;
+				local func;
+				while true do
+					if (FlatIdent_23FF9 == 0) then
+						func = coroutine.create(function()
+							local FlatIdent_61084 = 0;
+							while true do
+								if (FlatIdent_61084 == 0) then
+									blurEnabled = state;
+									if state then
+										local FlatIdent_69D54 = 0;
+										while true do
+											if (FlatIdent_69D54 == 0) then
+												repeat
+													local FlatIdent_7C57C = 0;
+													local mainUI;
+													while true do
+														if (FlatIdent_7C57C == 1) then
+															if (mainUI and mainUI.Enabled) then
+																ts:Create(clientBlur, TweenInfo.new(0.4), {Size=tonumber(blurSize)}):Play();
+															else
+																ts:Create(clientBlur, TweenInfo.new(0.4), {Size=0}):Play();
+															end
+															break;
+														end
+														if (FlatIdent_7C57C == 0) then
+															task.wait(0.4);
+															mainUI = coreGui:FindFirstChild("visualise");
+															FlatIdent_7C57C = 1;
+														end
+													end
+												until not blurEnabled 
+												ts:Create(clientBlur, TweenInfo.new(0.4), {Size=0}):Play();
+												break;
+											end
+										end
+									end
+									break;
+								end
+							end
+						end);
+						coroutine.resume(func);
+						break;
+					end
+				end
+			end});
+			ThemesCategory_ui.CreateSlider({Name="Blur Size",side="right",max=56,min=0,value=24,callback=function(state)
+				blurSize = state;
+			end});
+			break;
+		end
+		if (2 == FlatIdent_2C7C4) then
+			clientBlur.Size = 24;
+			ThemesCategory_ui.CreateLabel({Name="Client",side="right"});
+			FlatIdent_2C7C4 = 3;
+		end
+		if (1 == FlatIdent_2C7C4) then
+			clientBlur = Instance.new("BlurEffect", lighting);
+			clientBlur.Name = "ClientBlur";
+			FlatIdent_2C7C4 = 2;
+		end
+		if (FlatIdent_2C7C4 == 0) then
+			blurEnabled = false;
+			blurSize = 24;
+			FlatIdent_2C7C4 = 1;
+		end
+	end
+end);
+local function EmiteJC(pos)
+	local FlatIdent_74B46 = 0;
+	while true do
+		if (FlatIdent_74B46 == 0) then
+			JumpCircle.att.Position = pos;
+			JumpCircle.particle:Emit(1);
+			break;
+		end
+	end
+end
+if alive(lp) then
+	lp.Character.Humanoid.Jumping:Connect(function(state)
+		if (state and thingsEnabled.JumpCircleEnabled) then
+			EmiteJC(lp.Character.HumanoidRootPart.Position - Vector3.new(0, 3, 0));
+		end
+	end);
+end
+lp.CharacterAdded:Connect(function()
+	lp.Character:WaitForChild("Humanoid").Jumping:Connect(function(state)
+		if (state and thingsEnabled.JumpCircleEnabled) then
+			EmiteJC(lp.Character.HumanoidRootPart.Position - Vector3.new(0, 3, 0));
+		end
+	end);
+end);
